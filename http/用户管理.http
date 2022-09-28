@@ -1,0 +1,9 @@
+### 获取用户列表
+GET {{baseUrl}}/users
+Accept: application/json
+Authorization: {{token}}
+
+### 按照ID获取用户
+GET {{baseUrl}}/users/1
+Accept: application/json
+Authorization: {{token}}

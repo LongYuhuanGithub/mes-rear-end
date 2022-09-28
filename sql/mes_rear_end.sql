@@ -14,16 +14,17 @@ create table sys_user(
     phone                   varchar(11) default '' unique comment '手机号码',
     gender                  char(1) default '0' comment '用户性别（0男 1女 2未知）',
     status                  char(1) default '0' comment '帐号状态（0正常 1停用）',
-    delete_flag             char(1) default '0' comment '删除标志（0代表存在 1代表删除）',
     login_date              datetime comment '最后登录时间',
     password_update_date    datetime comment '密码最后更新时间',
     create_by               varchar(64) default null comment '创建者',
     create_time             datetime comment '创建时间',
-    remark                  varchar(500) default null comment '备注'
+    remark                  varchar(500) default null comment '备注',
+    is_delete               char(1) default 0 comment '删除标志（0代表存在 1代表删除）'
 ) engine = innodb comment = '用户信息表';
 select * from sys_user;
-insert into sys_user values(0, '市场部', 'admin', '123456', 'longyuhuan.com', '00', '2630819701@qq.com', '17374000851', '0', '0', '0', now(), now(), 'admin', now(), '管理员');
-insert into sys_user values(0, '开发部', 'zhangsan', '123456', 'longyuhuan.com', '00', 'zhangsan@qq.com', '13200000000', '0', '0', '0', now(), now(), 'admin', now(), '测试员');
+select id, dept, username, user_type, email, phone, gender, status, login_date, password_update_date, create_by, create_time, remark from sys_user where is_delete = 0;
+insert into sys_user values(0, '市场部', 'admin', '123456', 'longyuhuan.com', '00', '2630819701@qq.com', '17374000851', '0', '0', now(), now(), 'admin', now(), '管理员', 0);
+insert into sys_user values(0, '开发部', 'zhangsan', '123456', 'longyuhuan.com', '00', 'zhangsan@qq.com', '13200000000', '0', '0', now(), now(), 'admin', now(), '测试员', 0);
 
 -- 角色表
 drop table if exists sys_role;
@@ -32,14 +33,14 @@ create table sys_role(
     role_name       varchar(30) not null unique comment '角色名称',
     sort            int(4) not null comment '显示顺序',
     status          char(1) not null comment '角色状态（0正常 1停用）',
-    delete_flag     char(1) default '0' comment '删除标志（0代表存在 2代表删除）',
     create_by       varchar(64) default '' comment '创建者',
     create_time     datetime comment '创建时间',
-    remark          varchar(500) default null comment '备注'
+    remark          varchar(500) default null comment '备注',
+    is_delete     char(1) default '0' comment '删除标志（0代表存在 2代表删除）'
 ) engine = innodb comment = '角色信息表';
 select * from sys_role;
-insert into sys_role values(0, '超级管理员', 1, '0', '0', 'admin', now(), '超级管理员');
-insert into sys_role values(0, '普通角色', 2, '0', '0', 'admin', now(), '普通角色');
+insert into sys_role values(0, '超级管理员', 1, '0', 'admin', now(), '超级管理员', 0);
+insert into sys_role values(0, '普通角色', 2, '0', 'admin', now(), '普通角色', 0);
 
 -- 菜单表
 drop table if exists sys_menu;

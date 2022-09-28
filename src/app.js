@@ -4,7 +4,8 @@ const expressJWT = require('express-jwt') // 解析 Token 的中间件
 const joi = require('joi')
 const config = require('./config') // 导入配置文件
 // 导入路由模块
-const userRouter = require('./router/apis')
+const apiRouter = require('./router/api')
+const userRouter = require('./router/users')
 
 const app = express()
 
@@ -25,7 +26,8 @@ app.use((request, response, next) => {
 })
 
 // 注册路由模块
-app.use('/api', userRouter)
+app.use('/api', apiRouter)
+app.use('/users', userRouter)
 
 // 错误级别的中间件
 app.use((error, request, response, next) => {
