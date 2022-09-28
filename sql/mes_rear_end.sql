@@ -55,8 +55,17 @@ create table sys_menu(
     icon        varchar(100) default 'menu' comment '菜单图标'
 ) engine = innodb comment = '菜单权限表';
 select * from sys_menu;
-insert into sys_menu values(0, '系统管理', 0, 1, '/system', 'M', '0', 'setting');
-insert into sys_menu values(0, '用户管理', 1, 2, '/system/users', 'C', '1', 'user');
+insert into sys_menu values(0, '系统管理', 0, 1, '/home', 'M', '0', 'setting');
+insert into sys_menu values(0, '用户管理', 1, 1, '/home/users', 'C', '1', '');
+insert into sys_menu values(0, '角色管理', 1, 2, '/home/roles', 'C', '1', '');
+insert into sys_menu values(0, '菜单管理', 1, 3, '/home/menus', 'C', '1', '');
+insert into sys_menu values(0, '部门管理', 1, 4, '/home/departments', 'C', '1', '');
+insert into sys_menu values(0, '岗位管理', 1, 5, '/home/positions', 'C', '1', '');
+insert into sys_menu values(0, '字典管理', 1, 6, '/home/dictionaries', 'C', '1', '');
+insert into sys_menu values(0, '参数设置', 1, 7, '/home/parameters', 'C', '1', '');
+insert into sys_menu values(0, '通知公告', 1, 8, '/home/notifications', 'C', '1', '');
+insert into sys_menu values(0, '日志管理', 1, 9, '/home/logs', 'C', '1', '');
+insert into sys_menu values(0, '系统监控', 0, 2, '/control', 'M', '0', 'videocameraadd');
 
 -- 用户和角色关系表
 drop table if exists sys_user_role;
