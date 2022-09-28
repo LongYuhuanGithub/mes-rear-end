@@ -16,22 +16,6 @@ const password = joi.string().pattern(/^\S{6,12}$/).required() // 密码的验�
 const phone = joi.string().pattern(/^1[35789]\d{9}$/).required() // 手机的验证规则
 const email = joi.string().email().required() // 邮箱的验证规则
 
-// 账户登录的验证规则对象
-exports.userSchema = {
-  body: {
-    username,
-    password
-  }
-}
-
-// 手机登录的验证规则对象
-exports.userSchema = {
-  body: {
-    phone,
-    password
-  }
-}
-
 // 重置密码的验证规则对象
 exports.updatePasswordSchema = {
   body: {

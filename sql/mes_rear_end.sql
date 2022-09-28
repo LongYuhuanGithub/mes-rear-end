@@ -15,16 +15,15 @@ create table sys_user(
     gender                  char(1) default '0' comment '用户性别（0男 1女 2未知）',
     status                  char(1) default '0' comment '帐号状态（0正常 1停用）',
     delete_flag             char(1) default '0' comment '删除标志（0代表存在 1代表删除）',
-    login_ip                varchar(128) default '' comment '最后登录IP',
     login_date              datetime comment '最后登录时间',
     password_update_date    datetime comment '密码最后更新时间',
-    create_by               varchar(64) default '' comment '创建者',
+    create_by               varchar(64) default null comment '创建者',
     create_time             datetime comment '创建时间',
     remark                  varchar(500) default null comment '备注'
 ) engine = innodb comment = '用户信息表';
 select * from sys_user;
-insert into sys_user values(0, '市场部', 'admin', '123456', 'longyuhuan.com', '00', '2630819701@qq.com', '17374000851', '0', '0', '0', '127.0.0.1', now(), now(), 'admin', now(), '管理员');
-insert into sys_user values(0, '开发部', 'zhangsan', '123456', 'longyuhuan.com', '00', 'zhangsan@qq.com', '13200000000', '0', '0', '0', '127.0.0.1', now(), now(), 'admin', now(), '测试员');
+insert into sys_user values(0, '市场部', 'admin', '123456', 'longyuhuan.com', '00', '2630819701@qq.com', '17374000851', '0', '0', '0', now(), now(), 'admin', now(), '管理员');
+insert into sys_user values(0, '开发部', 'zhangsan', '123456', 'longyuhuan.com', '00', 'zhangsan@qq.com', '13200000000', '0', '0', '0', now(), now(), 'admin', now(), '测试员');
 
 -- 角色表
 drop table if exists sys_role;

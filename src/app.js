@@ -4,7 +4,7 @@ const expressJWT = require('express-jwt') // 解析 Token 的中间件
 const joi = require('joi')
 const config = require('./config') // 导入配置文件
 // 导入路由模块
-const userRouter = require('./router/users')
+const userRouter = require('./router/apis')
 
 const app = express()
 

@@ -3,8 +3,11 @@ POST {{baseUrl}}/api/register
 Content-Type: application/json
 
 {
-  "username": "wangwu",
-  "password": "123456"
+  "username": "lisi",
+  "password": "123456",
+  "email": "lisi@163.com",
+  "phone": "13200000001",
+  "gender": "1"
 }
 
 ### 账号登录
@@ -12,7 +15,7 @@ POST {{baseUrl}}/api/login
 Content-Type: application/json
 
 {
-  "username": "wangwu",
+  "username": "lisi",
   "password": "123456"
 }
 

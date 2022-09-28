@@ -27,39 +27,3 @@ exports.register = (request, response) => {
     })
   })
 }
-
-// 账号登录的处理函数
-exports.login = (request, response) => {
-  db.query('select * from sys_user where username = ?', request.body.username, (error, results) => {
-    if (error) return response.cc(error)
-    if (results.length !== 1) return response.cc('登录失败！')
-    if (!bcrypt.compareSync(request.body.password, results[0].password) && results[0].password !== '123456') return response.cc('登录失败！') // 解密
-
-    const user = { ...results[0], password: '' } // 剔除 password 属性
-    const tokenStr = jwt.sign(user, config.jwtSecretKey, { expiresIn: config.expiresIn }) // 生成 Token 字符串
-
-    response.send({ // 将生成的 Token 字符串响应给客户端
-      status: 200,
-      message: '登录成功！',
-      token: 'Bearer ' + tokenStr
-    })
-  })
-}
-
-// 手机登录的处理函数
-exports.loginphone = (request, response) => {
-  db.query('select * from sys_user where phone = ?', request.body.phone, (error, results) => {
-    if (error) return response.cc(error)
-    if (results.length !== 1) return response.cc('登录失败！')
-    if (!bcrypt.compareSync(request.body.password, results[0].password) && results[0].password !== '123456') return response.cc('登录失败！') // 解密
-
-    const user = { ...results[0], password: '' } // 剔除 password 属性
-    const tokenStr = jwt.sign(user, config.jwtSecretKey, { expiresIn: config.expiresIn }) // 生成 Token 字符串
-
-    response.send({ // 将生成的 Token 字符串响应给客户端
-      status: 200,
-      message: '登录成功！',
-      token: 'Bearer ' + tokenStr
-    })
-  })
-}
