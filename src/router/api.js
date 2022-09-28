@@ -12,6 +12,9 @@ const router = express.Router()
  *
  * @apiParam {String} username 用户名称
  * @apiParam {String} password 密码
+ * @apiParam {String} email 邮箱
+ * @apiParam {String} phone 手机
+ * @apiParam {String} gender 性别
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
