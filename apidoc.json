@@ -1,0 +1,10 @@
+{
+  "title": "MES制造执行系统-API接口文档",
+  "name": "MES制造执行系统-API接口文档",
+  "description": "项目接口文档",
+  "version": "1.0.0",
+  "template": {
+    "withCompare": false
+  },
+  "url": "http://localhost:3000"
+}
