@@ -1,4 +1,4 @@
-### 注册
+### 注册用户
 POST {{baseUrl}}/api/register
 Content-Type: application/json
 
@@ -7,11 +7,20 @@ Content-Type: application/json
   "password": "123456"
 }
 
-### 登录
+### 账号登录
 POST {{baseUrl}}/api/login
 Content-Type: application/json
 
 {
   "username": "wangwu",
+  "password": "123456"
+}
+
+### 手机登录
+POST {{baseUrl}}/api/loginphone
+Content-Type: application/json
+
+{
+  "phone": "17374000851",
   "password": "123456"
 }

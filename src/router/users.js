@@ -24,7 +24,7 @@ const router = express.Router()
 router.post('/register', expressJoi(userSchema), userHandler.register)
 
 /**
- * @api {post} /api/login 登录
+ * @api {post} /api/login 账号登录
  * @apiName PostApiLogin
  * @apiGroup 无需访问权限的API
  *
@@ -42,5 +42,25 @@ router.post('/register', expressJoi(userSchema), userHandler.register)
  * }
  */
 router.post('/login', expressJoi(userSchema), userHandler.login)
+
+/**
+ * @api {post} /api/loginphone 手机登录
+ * @apiName PostApiLoginphone
+ * @apiGroup 无需访问权限的API
+ *
+ * @apiParam {String} phone 手机号
+ * @apiParam {String} password 密码
+ *
+ * @apiSuccess {Number} status 状态码
+ * @apiSuccess {String} message 消息
+ * @apiSuccess {String} token Token令牌
+ * @apiSuccessExample {json} 响应数据
+ * {
+ *   "status": 200,
+ *   "message": "登录成功！",
+ *   "token": "Bearer ..."
+ * }
+ */
+router.post('/loginphone', expressJoi(userSchema), userHandler.loginphone)
 
 module.exports = router
