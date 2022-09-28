@@ -1,5 +1,6 @@
 const db = require('../db')
 const config = require('../config') // 导入配置文件
+const md5 = require('md5') // 导入 md5 加密
 const bcrypt = require('bcryptjs') // 导入加密模块
 const jwt = require('jsonwebtoken') // 用这个包来生成 Token 字符串
 
@@ -11,11 +12,14 @@ exports.register = (request, response) => {
     if (error) return response.cc(error)
     if (results[0]['count(1)'] > 0) return response.cc('用户名被占用，请更换其他用户名！') // 用户名被占用
 
-    request.body.password = bcrypt.hashSync(request.body.password, 10) // 加密
+    const salt = Math.floor(Math.random() * 9000000000) + 1000000000 // 随机生成一个盐
+    request.body.password = md5(md5(request.body.password + salt)) // 两次 md5 加密
+    request.body.password = bcrypt.hashSync(request.body.password, 10) // bcryptjs 加密
 
     db.query(`insert into sys_user set ?`, { // 注册用户
       username: request.body.username,
       password: request.body.password,
+      salt,
       user_type: '01',
       email: request.body.email,
       phone: request.body.phone,
@@ -36,7 +40,9 @@ exports.login = (request, response) => {
   db.query(`select * from sys_user where username = ?`, request.body.username, (error, results) => {
     if (error) return response.cc(error)
     if (results.length !== 1) return response.cc('登录失败！')
-    if (!bcrypt.compareSync(request.body.password, results[0].password) && results[0].password !== '123456') return response.cc('登录失败！') // 解密
+
+    request.body.password = md5(md5(request.body.password + results[0].salt)) // 两次 md5 加密
+    if (!bcrypt.compareSync(request.body.password, results[0].password) && results[0].password !== '123456') return response.cc('登录失败！') // 校验密码
 
     const user = { ...results[0], password: '' } // 剔除 password 属性
     const tokenStr = jwt.sign(user, config.jwtSecretKey, { expiresIn: config.expiresIn }) // 生成 Token 字符串
@@ -54,7 +60,9 @@ exports.loginphone = (request, response) => {
   db.query(`select * from sys_user where phone = ?`, request.body.phone, (error, results) => {
     if (error) return response.cc(error)
     if (results.length !== 1) return response.cc('登录失败！')
-    if (!bcrypt.compareSync(request.body.password, results[0].password) && results[0].password !== '123456') return response.cc('登录失败！') // 解密
+
+    request.body.password = md5(md5(request.body.password + results[0].salt)) // 两次 md5 加密
+    if (!bcrypt.compareSync(request.body.password, results[0].password) && results[0].password !== '123456') return response.cc('登录失败！') // 校验密码
 
     const user = { ...results[0], password: '' } // 剔除 password 属性
     const tokenStr = jwt.sign(user, config.jwtSecretKey, { expiresIn: config.expiresIn }) // 生成 Token 字符串
