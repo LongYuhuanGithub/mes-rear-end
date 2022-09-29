@@ -2,7 +2,6 @@ const db = require('../config')
 
 // 获取菜单列表的处理函数
 exports.getMenuList = (request, response) => {
-  console.log('==spdgjsdokjfpsido')
   const sql = `select * from sys_menu`
   db.query(sql, (error, results) => {
     if (error) return response.cc(error)

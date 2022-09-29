@@ -36,12 +36,28 @@ router.post('/register', expressJoi(registerSchema), apiHandler.register)
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
+ * @apiSuccess {Object} data 用户数据
  * @apiSuccess {String} token Token令牌
  * @apiSuccessExample {json} 响应数据示例
  * {
  *   "status": 200,
  *   "message": "登录成功！",
- *   "token": "Bearer ..."
+ *   "token": "Bearer ...",
+ *   "data": {
+ *     "id": 1, // 用户ID
+ *     "dept": "市场部", // 部门
+ *     "username": "admin", // 用户名称
+ *     "user_type": "00", // 用户类型（00系统用户 01注册用户）
+ *     "email": "2630819701@qq.com", // 邮箱
+ *     "phone": "17374000851", // 手机号码
+ *     "gender": "0", // 性别（0男 1女 2未知）
+ *     "status": "0", // 账号状态（0正常 1停用）
+ *     "login_date": "2022-09-28T11:53:07.000Z", // 最后登录时间
+ *     "password_update_date": "2022-09-28T11:53:07.000Z", // 密码最后更新时间
+ *     "create_by": "admin", // 创建者
+ *     "create_time": "2022-09-28T11:53:07.000Z", // 创建时间
+ *     "remark": "管理员" // 备注
+ *   }
  * }
  */
 router.post('/login', expressJoi(loginSchema), apiHandler.login)
@@ -56,12 +72,28 @@ router.post('/login', expressJoi(loginSchema), apiHandler.login)
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
+ * @apiSuccess {Object} data 用户数据
  * @apiSuccess {String} token Token令牌
  * @apiSuccessExample {json} 响应数据示例
  * {
  *   "status": 200,
  *   "message": "登录成功！",
- *   "token": "Bearer ..."
+ *   "token": "Bearer ...",
+ *   "data": {
+ *     "id": 1, // 用户ID
+ *     "dept": "市场部", // 部门
+ *     "username": "admin", // 用户名称
+ *     "user_type": "00", // 用户类型（00系统用户 01注册用户）
+ *     "email": "2630819701@qq.com", // 邮箱
+ *     "phone": "17374000851", // 手机号码
+ *     "gender": "0", // 性别（0男 1女 2未知）
+ *     "status": "0", // 账号状态（0正常 1停用）
+ *     "login_date": "2022-09-28T11:53:07.000Z", // 最后登录时间
+ *     "password_update_date": "2022-09-28T11:53:07.000Z", // 密码最后更新时间
+ *     "create_by": "admin", // 创建者
+ *     "create_time": "2022-09-28T11:53:07.000Z", // 创建时间
+ *     "remark": "管理员" // 备注
+ *   }
  * }
  */
 router.post('/loginphone', expressJoi(loginPhoneSchema), apiHandler.loginPhone)

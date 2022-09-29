@@ -3,9 +3,9 @@ POST {{baseUrl}}/api/register
 Content-Type: application/json
 
 {
-  "username": "wangwu",
+  "username": "lisi",
   "password": "123456",
-  "email": "wangwu@163.com",
+  "email": "lisi@163.com",
   "phone": "13200000002",
   "gender": "1"
 }
@@ -41,7 +41,7 @@ PUT {{baseUrl}}/api/resetpassword
 Content-Type: application/json
 
 {
-  "checkCode": "cuxp",
+  "checkCode": "Po3q",
   "newPassword": "1234567",
   "affirmPassword": "1234567"
 }

@@ -7,9 +7,7 @@ const moment = require('moment')
 
 // 注册用户的处理函数
 exports.register = (request, response) => {
-  if (!request.body.username || !request.body.password) return response.cc('用户名和密码不能为空！') // 判断数据是否合法
-
-  let sql = `select count(1) from sys_user where username = ?`
+  let sql = `select count(1) from sys_user where is_delete = 0 and username = ?`
   db.query(sql, [request.body.username], (error, results) => { // 检测用户名是否被占用
     if (error) return response.cc(error)
     if (results[0]['count(1)'] > 0) return response.cc('用户名被占用，请更换其他用户名！') // 用户名被占用
@@ -40,7 +38,7 @@ exports.register = (request, response) => {
 
 // 账号登录的处理函数
 exports.login = (request, response) => {
-  const sql = `select * from sys_user where username = ?`
+  const sql = `select * from sys_user where is_delete = 0 and username = ?`
   db.query(sql, request.body.username, (error, results) => {
     if (error) return response.cc(error)
     if (results.length !== 1) return response.cc('用户不存在！')
@@ -48,20 +46,24 @@ exports.login = (request, response) => {
     request.body.password = md5(md5(request.body.password + results[0].salt)) // 两次 md5 加密
     if (!bcrypt.compareSync(request.body.password, results[0].password) && results[0].password !== '123456') return response.cc('登录失败！') // 校验密码
 
-    const user = { ...results[0], password: '' } // 剔除 password 属性
+    const user = { ...results[0] }
+    delete user.password // 剔除 password 属性
+    delete user.salt
+    delete user.is_delete
     const tokenStr = jwt.sign(user, config.jwtSecretKey, { expiresIn: config.expiresIn }) // 生成 Token 字符串
 
     response.send({ // 将生成的 Token 字符串响应给客户端
       status: 200,
       message: '登录成功！',
-      token: 'Bearer ' + tokenStr
+      token: 'Bearer ' + tokenStr,
+      data: user
     })
   })
 }
 
 // 手机登录的处理函数
 exports.loginPhone = (request, response) => {
-  const sql = `select * from sys_user where phone = ?`
+  const sql = `select * from sys_user where is_delete = 0 and phone = ?`
   db.query(sql, request.body.phone, (error, results) => {
     if (error) return response.cc(error)
     if (results.length !== 1) return response.cc('手机不存在！')
@@ -69,20 +71,24 @@ exports.loginPhone = (request, response) => {
     request.body.password = md5(md5(request.body.password + results[0].salt)) // 两次 md5 加密
     if (!bcrypt.compareSync(request.body.password, results[0].password) && results[0].password !== '123456') return response.cc('登录失败！') // 校验密码
 
-    const user = { ...results[0], password: '' } // 剔除 password 属性
+    const user = { ...results[0] }
+    delete user.password // 剔除 password 属性
+    delete user.salt
+    delete user.is_delete
     const tokenStr = jwt.sign(user, config.jwtSecretKey, { expiresIn: config.expiresIn }) // 生成 Token 字符串
 
     response.send({ // 将生成的 Token 字符串响应给客户端
       status: 200,
       message: '登录成功！',
-      token: 'Bearer ' + tokenStr
+      token: 'Bearer ' + tokenStr,
+      data: user
     })
   })
 }
 
 // 获取验证码的处理函数
 exports.getCheckCode = (request, response) => {
-  const sql = `select * from sys_user where email = ?`
+  const sql = `select * from sys_user where is_delete = 0 and email = ?`
   db.query(sql, request.body.email, (error, results) => {
     if (error) return response.cc(error)
     if (results.length !== 1) return response.cc('邮箱不存在！')
@@ -108,7 +114,7 @@ exports.getCheckCode = (request, response) => {
 exports.resetPassword = (request, response) => {
   if ((request.body.checkCode + '').toLowerCase() !== (request.session.checkCode + '').toLowerCase()) return response.cc('验证码错误！')
 
-  const sql = `update sys_user set password = ?, password_update_date = now() where id = ?`
+  const sql = `update sys_user set password = ?, password_update_date = now() where is_delete = 0 and id = ?`
   db.query(sql, [request.body.newPassword, request.session.userId], (error, results) => {
     if (error) return response.cc(error)
     if (results.affectedRows === 0) return response.cc('重置密码失败，请稍后再试！')

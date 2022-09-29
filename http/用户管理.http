@@ -7,3 +7,16 @@ Authorization: {{token}}
 GET {{baseUrl}}/users/1
 Accept: application/json
 Authorization: {{token}}
+
+### 添加用户
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "username": "lisi",
+  "password": "123456",
+  "email": "lisi@163.com",
+  "phone": "13200000002",
+  "gender": "1",
+  "role_id": 1
+}

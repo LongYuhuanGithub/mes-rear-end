@@ -94,3 +94,12 @@ create table sys_role_menu(
 select * from sys_role_menu;
 insert into sys_role_menu values(1, 1);
 insert into sys_role_menu values(1, 2);
+insert into sys_role_menu values(1, 3);
+insert into sys_role_menu values(1, 4);
+insert into sys_role_menu values(1, 5);
+insert into sys_role_menu values(1, 6);
+insert into sys_role_menu values(1, 7);
+insert into sys_role_menu values(1, 8);
+insert into sys_role_menu values(1, 9);
+insert into sys_role_menu values(1, 10);
+insert into sys_role_menu values(1, 11);
