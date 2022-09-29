@@ -5,6 +5,8 @@ const bcrypt = require('bcryptjs') // 导入加密模块
 const jwt = require('jsonwebtoken') // 用这个包来生成 Token 字符串
 const moment = require('moment')
 
+const serverData = {} // 记录一些数据，如验证码
+
 // 注册用户的处理函数
 exports.register = (request, response) => {
   let sql = `select count(1) from sys_user where is_delete = 0 and username = ?`
@@ -99,9 +101,11 @@ exports.getCheckCode = (request, response) => {
     for (let i = 0; i < 4; i++) {
       checkCode += str.charAt(Math.floor(Math.random() * str.length))
     }
-    request.session.userId = results[0].id
-    request.session.salt = results[0].salt
-    request.session.checkCode = checkCode
+    serverData.userId = results[0].id
+    serverData.salt = results[0].salt
+    serverData.checkCode = checkCode
+
+    console.log(request.body.checkCode, serverData.checkCode)
 
     response.send({ // 将生成的 Token 字符串响应给客户端
       status: 200,
@@ -113,23 +117,23 @@ exports.getCheckCode = (request, response) => {
 
 // 重置密码的处理函数
 exports.resetPassword = (request, response) => {
-  if ((request.body.checkCode + '').toLowerCase() !== (request.session.checkCode + '').toLowerCase()) {
-    delete request.session.userId
-    delete request.session.salt
-    delete request.session.checkCode
+  if ((request.body.checkCode + '').toLowerCase() !== (serverData.checkCode + '').toLowerCase()) {
+    delete serverData.userId
+    delete serverData.salt
+    delete serverData.checkCode
     return response.cc('验证码错误！')
   }
 
-  request.body.newPassword = md5(md5(request.body.newPassword + request.session.salt)) // 两次 md5 加密
+  request.body.newPassword = md5(md5(request.body.newPassword + serverData.salt)) // 两次 md5 加密
   request.body.newPassword = bcrypt.hashSync(request.body.newPassword, 10) // bcryptjs 加密
 
   const sql = `update sys_user set password = ?, password_update_date = now() where is_delete = 0 and id = ?`
-  db.query(sql, [request.body.newPassword, request.session.userId], (error, results) => {
+  db.query(sql, [request.body.newPassword, serverData.userId], (error, results) => {
     if (error) return response.cc(error)
     if (results.affectedRows === 0) return response.cc('重置密码失败，请稍后再试！')
-    delete request.session.userId
-    delete request.session.salt
-    delete request.session.checkCode
+    delete serverData.userId
+    delete serverData.salt
+    delete serverData.checkCode
     response.cc('重置成功！', 200)
   })
 }
