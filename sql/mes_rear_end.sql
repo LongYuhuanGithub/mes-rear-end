@@ -48,7 +48,7 @@ drop table if exists sys_menu;
 create table sys_menu(
     id          bigint not null primary key auto_increment comment '菜单ID',
     menu_name   varchar(50) not null unique comment '菜单名称',
-    parent_id   bigint default 0 comment '父菜单ID',
+    parent_id   bigint default 0 comment '父菜单ID（0表示没有父级）',
     sort        int(4) default 0 comment '显示顺序',
     url         varchar(200) default '' comment '请求地址',
     menu_type   char(1) default '' comment '菜单类型（M目录 C菜单 F按钮）',

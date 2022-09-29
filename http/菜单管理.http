@@ -1,0 +1,4 @@
+### 获取菜单列表
+GET {{baseUrl}}/menus
+Accept: application/json
+Authorization: {{token}}

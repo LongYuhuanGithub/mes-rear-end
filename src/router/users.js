@@ -6,9 +6,9 @@ const userHandler = require('../controller/users') // 导入路由处理函数�
 const router = express.Router()
 
 /**
- * @api {get} /users 获取用户列表
+ * @api {get} /users 01-获取用户列表
  * @apiName GetUserList
- * @apiGroup 用户管理
+ * @apiGroup Users
  *
  * @apiHeader {String} Authorization Token令牌
  *
@@ -41,9 +41,9 @@ const router = express.Router()
 router.get('/', userHandler.getUserList)
 
 /**
- * @api {get} /users/:id 根据ID获取用户
+ * @api {get} /users/:id 02-根据ID获取用户
  * @apiName GetUserById
- * @apiGroup 用户管理
+ * @apiGroup Users
  *
  * @apiHeader {String} Authorization Token令牌
  *

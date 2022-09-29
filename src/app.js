@@ -9,6 +9,7 @@ const config = require('./utils/config') // 导入配置文件
 // 导入路由模块
 const apiRouter = require('./router/api')
 const userRouter = require('./router/users')
+const menusRouter = require('./router/menus')
 
 const app = express()
 moment.locale('zh-cn')
@@ -39,6 +40,7 @@ app.use((request, response, next) => {
 // 注册路由模块
 app.use('/api', apiRouter)
 app.use('/users', userRouter)
+app.use('/menus', menusRouter)
 
 // 错误级别的中间件
 app.use((error, request, response, next) => {

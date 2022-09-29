@@ -1,5 +1,5 @@
 const db = require('../config')
-const config = require('../config') // 导入配置文件
+const config = require('../utils/config') // 导入配置文件
 const bcrypt = require('bcryptjs') // 导入加密模块
 const jwt = require('jsonwebtoken') // 用这个包来生成 Token 字符串
 

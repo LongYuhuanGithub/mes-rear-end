@@ -6,9 +6,9 @@ const apiHandler = require('../controller/api') // 导入路由处理函数模�
 const router = express.Router()
 
 /**
- * @api {post} /api/register 注册用户
+ * @api {post} /api/register 01-注册用户
  * @apiName PostApiRegister
- * @apiGroup 无需访问权限的API
+ * @apiGroup PublicApi
  *
  * @apiParam {String} username 用户名称
  * @apiParam {String} password 密码
@@ -27,9 +27,9 @@ const router = express.Router()
 router.post('/register', expressJoi(registerSchema), apiHandler.register)
 
 /**
- * @api {post} /api/login 账号登录
+ * @api {post} /api/login 02-账号登录
  * @apiName PostApiLogin
- * @apiGroup 无需访问权限的API
+ * @apiGroup PublicApi
  *
  * @apiParam {String} username 用户名称
  * @apiParam {String} password 密码
@@ -47,9 +47,9 @@ router.post('/register', expressJoi(registerSchema), apiHandler.register)
 router.post('/login', expressJoi(loginSchema), apiHandler.login)
 
 /**
- * @api {post} /api/loginphone 手机登录
+ * @api {post} /api/loginphone 03-手机登录
  * @apiName PostApiLoginphone
- * @apiGroup 无需访问权限的API
+ * @apiGroup PublicApi
  *
  * @apiParam {String} phone 手机号
  * @apiParam {String} password 密码
@@ -67,9 +67,9 @@ router.post('/login', expressJoi(loginSchema), apiHandler.login)
 router.post('/loginphone', expressJoi(loginPhoneSchema), apiHandler.loginPhone)
 
 /**
- * @api {post} /api/getcheckcode 获取验证码
+ * @api {post} /api/getcheckcode 04-获取验证码
  * @apiName PostApiGetcheckcode
- * @apiGroup 无需访问权限的API
+ * @apiGroup PublicApi
  *
  * @apiParam {String} email 邮箱
  *
@@ -86,9 +86,9 @@ router.post('/loginphone', expressJoi(loginPhoneSchema), apiHandler.loginPhone)
 router.post('/getcheckcode', expressJoi(getCheckCodeSchema), apiHandler.getCheckCode)
 
 /**
- * @api {put} /api/resetpassword 重置密码
+ * @api {put} /api/resetpassword 05-重置密码
  * @apiName PostApiResetpassword
- * @apiGroup 无需访问权限的API
+ * @apiGroup PublicApi
  *
  * @apiParam {String} checkCode 验证码
  * @apiParam {String} newPassword 新密码
