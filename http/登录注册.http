@@ -33,7 +33,7 @@ POST {{baseUrl}}/api/getcheckcode
 Content-Type: application/json
 
 {
-  "email": "2630819701@qq.com"
+  "email": "lisi@163.com"
 }
 
 ### 重置密码
@@ -41,7 +41,7 @@ PUT {{baseUrl}}/api/resetpassword
 Content-Type: application/json
 
 {
-  "checkCode": "Po3q",
-  "newPassword": "1234567",
-  "affirmPassword": "1234567"
+  "checkCode": "rdeS",
+  "newPassword": "123456",
+  "affirmPassword": "123456"
 }

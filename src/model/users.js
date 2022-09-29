@@ -28,7 +28,7 @@ exports.addUserSchema = {
     gender,
     create_by: joi.string().required(),
     remark: joi.string().required(),
-    role_id: id
+    role_id: id // ========================================================================================================================
   }
 }
 

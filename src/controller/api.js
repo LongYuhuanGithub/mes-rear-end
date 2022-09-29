@@ -100,6 +100,7 @@ exports.getCheckCode = (request, response) => {
       checkCode += str.charAt(Math.floor(Math.random() * str.length))
     }
     request.session.userId = results[0].id
+    request.session.salt = results[0].salt
     request.session.checkCode = checkCode
 
     response.send({ // 将生成的 Token 字符串响应给客户端
@@ -112,13 +113,22 @@ exports.getCheckCode = (request, response) => {
 
 // 重置密码的处理函数
 exports.resetPassword = (request, response) => {
-  if ((request.body.checkCode + '').toLowerCase() !== (request.session.checkCode + '').toLowerCase()) return response.cc('验证码错误！')
+  if ((request.body.checkCode + '').toLowerCase() !== (request.session.checkCode + '').toLowerCase()) {
+    delete request.session.userId
+    delete request.session.salt
+    delete request.session.checkCode
+    return response.cc('验证码错误！')
+  }
+
+  request.body.newPassword = md5(md5(request.body.newPassword + request.session.salt)) // 两次 md5 加密
+  request.body.newPassword = bcrypt.hashSync(request.body.newPassword, 10) // bcryptjs 加密
 
   const sql = `update sys_user set password = ?, password_update_date = now() where is_delete = 0 and id = ?`
   db.query(sql, [request.body.newPassword, request.session.userId], (error, results) => {
     if (error) return response.cc(error)
     if (results.affectedRows === 0) return response.cc('重置密码失败，请稍后再试！')
     delete request.session.userId
+    delete request.session.salt
     delete request.session.checkCode
     response.cc('重置成功！', 200)
   })
