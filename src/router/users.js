@@ -41,11 +41,13 @@ const router = express.Router()
 router.get('/', userHandler.getUserList)
 
 /**
- * @api {get} /users 获取用户列表
- * @apiName GetUserList
+ * @api {get} /users/:id 根据ID获取用户
+ * @apiName GetUserById
  * @apiGroup 用户管理
  *
  * @apiHeader {String} Authorization Token令牌
+ *
+ * @apiParam {Number} id 用户ID，写在地址栏中
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
