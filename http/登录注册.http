@@ -5,8 +5,8 @@ Content-Type: application/json
 {
   "username": "lisi",
   "password": "123456",
-  "email": "lisi@163.com",
-  "phone": "13200000002",
+  "email": "lisi@qq.com",
+  "phone": "13200000001",
   "gender": "1"
 }
 

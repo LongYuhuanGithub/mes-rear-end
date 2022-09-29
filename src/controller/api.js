@@ -18,8 +18,9 @@ exports.register = (request, response) => {
     request.body.password = md5(md5(request.body.password + salt)) // 两次 md5 加密
     request.body.password = bcrypt.hashSync(request.body.password, 10) // bcryptjs 加密
 
+    // 添加用户
     sql = `insert into sys_user set ?`
-    db.query(sql, { // 注册用户
+    db.query(sql, {
       username: request.body.username,
       password: request.body.password,
       salt,
@@ -32,8 +33,15 @@ exports.register = (request, response) => {
       create_time: moment().format('YYYY-MM-DD HH:mm:ss')
     }, (error, results) => {
       if (error) return response.cc(error)
-      if (results.affectedRows === 0) return response.cc('注册用户失败，请稍后再试！')
-      response.cc('注册成功！', 200)
+      if (!results.affectedRows) return response.cc('注册用户失败，请稍后再试！')
+
+      // 添加用户角色关系
+      sql = `insert into sys_user_role values(?, 2)`
+      db.query(sql, [results.insertId], (error, results) => {
+        if (error) return response.cc(error)
+        if (!results.affectedRows) return response.cc('添加用户角色关系失败，请稍后再试！')
+        response.cc('注册成功！', 200)
+      })
     })
   })
 }
@@ -130,7 +138,7 @@ exports.resetPassword = (request, response) => {
   const sql = `update sys_user set password = ?, password_update_date = now() where is_delete = 0 and id = ?`
   db.query(sql, [request.body.newPassword, serverData.userId], (error, results) => {
     if (error) return response.cc(error)
-    if (results.affectedRows === 0) return response.cc('重置密码失败，请稍后再试！')
+    if (!results.affectedRows) return response.cc('重置密码失败，请稍后再试！')
     delete serverData.userId
     delete serverData.salt
     delete serverData.checkCode

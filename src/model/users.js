@@ -28,17 +28,11 @@ exports.addUserSchema = {
     gender,
     create_by: joi.string().required(),
     remark: joi.string().required(),
-    role_id: id // ========================================================================================================================
+    role_id: id
   }
 }
 
-// 按照ID获取用户的验证规则对象
-exports.deleteUserSchema = {
-  body: {
-  }
-}
-
-// 按照ID获取用户的验证规则对象
+// 修改用户的验证规则对象
 exports.updateUserSchema = {
   body: {
   }

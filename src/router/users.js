@@ -99,7 +99,22 @@ router.get('/:id', userHandler.getUserById)
  */
 router.post('/', expressJoi(addUserSchema), userHandler.addUser)
 
-router.delete('/', expressJoi(deleteUserSchema), userHandler.deleteUser)
+/**
+ * @api {delete} /users/:id 04-删除用户
+ * @apiName PostUserDelete
+ * @apiGroup Users
+ *
+ * @apiParam {Number} id 用户ID，写在地址栏中
+ *
+ * @apiSuccess {Number} status 状态码
+ * @apiSuccess {String} message 消息
+ * @apiSuccessExample {json} 响应数据示例
+ * {
+ *   "status": 200,
+ *   "message": "删除成功！"
+ * }
+ */
+router.delete('/:id', userHandler.deleteUser)
 
 router.put('/', expressJoi(updateUserSchema), userHandler.updateUser)
 

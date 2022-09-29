@@ -58,15 +58,27 @@ exports.addUser = (request, response) => {
       remark: request.body.remark
     }, (error, results) => {
       if (error) return response.cc(error)
-      if (results.affectedRows === 0) return response.cc('添加用户失败，请稍后再试！')
-      response.cc('添加成功！', 200)
+      if (!results.affectedRows) return response.cc('添加用户失败，请稍后再试！')
+
+      // 添加用户角色关系
+      sql = `insert into sys_user_role values(?, ?)`
+      db.query(sql, [results.insertId, request.body.role_id], (error, results) => {
+        if (error) return response.cc(error)
+        if (!results.affectedRows) return response.cc('添加用户角色关系失败，请稍后再试！')
+        response.cc('添加成功！', 200)
+      })
     })
   })
 }
 
 // 删除用户的处理函数
 exports.deleteUser = (request, response) => {
-  console.log(request, response)
+  const sql = `update sys_user set is_delete = ? where id = ?`
+  db.query(sql, [1, request.params.id], (error, results) => { // 将 is_delete 改成 1 表示删除
+    if (error) return response.cc(error)
+    if (!results.affectedRows) return response.cc('删除用户失败，请稍后再试！')
+    response.cc('删除成功！', 200)
+  })
 }
 
 // 修改用户的处理函数
