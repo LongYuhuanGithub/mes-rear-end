@@ -1,14 +1,25 @@
 const express = require('express')
+const cookieParser = require('cookie-parser')
+const session = require('express-session')
 const cors = require('cors') // 解决跨域问题
 const expressJWT = require('express-jwt') // 解析 Token 的中间件
 const joi = require('joi')
-const config = require('./config') // 导入配置文件
+const moment = require('moment')
+const config = require('./utils/config') // 导入配置文件
 // 导入路由模块
 const apiRouter = require('./router/api')
 const userRouter = require('./router/users')
 
 const app = express()
+moment.locale('zh-cn')
 
+app.use(cookieParser())
+app.use(session({
+  secret: "LongYuhuan", // 设置签名秘钥，内容可以任意填写
+  cookie: { maxAge: 1000 * 60 * 3 }, // 3 分钟后 cookie 过期
+  resave: true, // 强制保存，如果 session 没有被修改也要重新保存
+  saveUninitialized: false // 如果原先没有 session 那么就设置，否则不设置
+}))
 app.use(express.urlencoded({ extended: false })) // Content-Type: application/x-www-form-urlencoded
 app.use(express.json()) // 解析 Content-Type: application/json
 app.use(cors())

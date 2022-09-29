@@ -25,6 +25,7 @@ select * from sys_user;
 select id, dept, username, user_type, email, phone, gender, status, login_date, password_update_date, create_by, create_time, remark from sys_user where is_delete = 0;
 insert into sys_user values(0, '市场部', 'admin', '123456', 'longyuhuan.com', '00', '2630819701@qq.com', '17374000851', '0', '0', now(), now(), 'admin', now(), '管理员', 0);
 insert into sys_user values(0, '开发部', 'zhangsan', '123456', 'longyuhuan.com', '00', 'zhangsan@qq.com', '13200000000', '0', '0', now(), now(), 'admin', now(), '测试员', 0);
+# update sys_user set password = '123456', password_update_date = now() where id = 1;
 
 -- 角色表
 drop table if exists sys_role;

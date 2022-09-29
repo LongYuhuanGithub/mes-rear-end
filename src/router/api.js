@@ -1,7 +1,7 @@
 const express = require('express')
 const expressJoi = require('@escook/express-joi') // 导入验证表单数据的中间件
-const { registerSchema, loginSchema, loginphoneSchema } = require('../schema/api') // 导入需要的验证规则对象
-const apiHandler = require('../routerHandler/api') // 导入路由处理函数模块
+const { registerSchema, loginSchema, loginPhoneSchema, getCheckCodeSchema, resetPasswordSchema } = require('../model/api') // 导入需要的验证规则对象
+const apiHandler = require('../controller/api') // 导入路由处理函数模块
 
 const router = express.Router()
 
@@ -64,6 +64,44 @@ router.post('/login', expressJoi(loginSchema), apiHandler.login)
  *   "token": "Bearer ..."
  * }
  */
-router.post('/loginphone', expressJoi(loginphoneSchema), apiHandler.loginphone)
+router.post('/loginphone', expressJoi(loginPhoneSchema), apiHandler.loginPhone)
+
+/**
+ * @api {post} /api/getcheckcode 获取验证码
+ * @apiName PostApiGetcheckcode
+ * @apiGroup 无需访问权限的API
+ *
+ * @apiParam {String} email 邮箱
+ *
+ * @apiSuccess {Number} status 状态码
+ * @apiSuccess {String} message 消息
+ * @apiSuccess {String} checkCode 验证码
+ * @apiSuccessExample {json} 响应数据示例
+ * {
+ *   "status": 200,
+ *   "message": "获取成功！",
+ *   "checkCode": "bmOM"
+ * }
+ */
+router.post('/getcheckcode', expressJoi(getCheckCodeSchema), apiHandler.getCheckCode)
+
+/**
+ * @api {put} /api/resetpassword 重置密码
+ * @apiName PostApiResetpassword
+ * @apiGroup 无需访问权限的API
+ *
+ * @apiParam {String} checkCode 验证码
+ * @apiParam {String} newPassword 新密码
+ * @apiParam {String} affirmPassword 确认密码
+ *
+ * @apiSuccess {Number} status 状态码
+ * @apiSuccess {String} message 消息
+ * @apiSuccessExample {json} 响应数据示例
+ * {
+ *   "status": 200,
+ *   "message": "重置成功！"
+ * }
+ */
+router.put('/resetpassword', expressJoi(resetPasswordSchema), apiHandler.resetPassword)
 
 module.exports = router

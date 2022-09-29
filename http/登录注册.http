@@ -3,10 +3,10 @@ POST {{baseUrl}}/api/register
 Content-Type: application/json
 
 {
-  "username": "lisi",
+  "username": "wangwu",
   "password": "123456",
-  "email": "lisi@163.com",
-  "phone": "13200000001",
+  "email": "wangwu@163.com",
+  "phone": "13200000002",
   "gender": "1"
 }
 
@@ -26,4 +26,22 @@ Content-Type: application/json
 {
   "phone": "17374000851",
   "password": "123456"
+}
+
+### 获取验证码
+POST {{baseUrl}}/api/getcheckcode
+Content-Type: application/json
+
+{
+  "email": "2630819701@qq.com"
+}
+
+### 重置密码
+PUT {{baseUrl}}/api/resetpassword
+Content-Type: application/json
+
+{
+  "checkCode": "cuxp",
+  "newPassword": "1234567",
+  "affirmPassword": "1234567"
 }

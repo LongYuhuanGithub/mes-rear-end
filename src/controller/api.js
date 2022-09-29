@@ -1,14 +1,16 @@
-const db = require('../db')
+const db = require('../config')
 const config = require('../config') // 导入配置文件
 const md5 = require('md5') // 导入 md5 加密
 const bcrypt = require('bcryptjs') // 导入加密模块
 const jwt = require('jsonwebtoken') // 用这个包来生成 Token 字符串
+const moment = require('moment')
 
 // 注册用户的处理函数
 exports.register = (request, response) => {
   if (!request.body.username || !request.body.password) return response.cc('用户名和密码不能为空！') // 判断数据是否合法
 
-  db.query(`select count(1) from sys_user where username = ?`, [request.body.username], (error, results) => { // 检测用户名是否被占用
+  let sql = `select count(1) from sys_user where username = ?`
+  db.query(sql, [request.body.username], (error, results) => { // 检测用户名是否被占用
     if (error) return response.cc(error)
     if (results[0]['count(1)'] > 0) return response.cc('用户名被占用，请更换其他用户名！') // 用户名被占用
 
@@ -16,7 +18,8 @@ exports.register = (request, response) => {
     request.body.password = md5(md5(request.body.password + salt)) // 两次 md5 加密
     request.body.password = bcrypt.hashSync(request.body.password, 10) // bcryptjs 加密
 
-    db.query(`insert into sys_user set ?`, { // 注册用户
+    sql = `insert into sys_user set ?`
+    db.query(sql, { // 注册用户
       username: request.body.username,
       password: request.body.password,
       salt,
@@ -24,9 +27,9 @@ exports.register = (request, response) => {
       email: request.body.email,
       phone: request.body.phone,
       gender: request.body.gender,
-      login_date: config.formatDate(Date.now()),
-      password_update_date: config.formatDate(Date.now()),
-      create_time: config.formatDate(Date.now())
+      login_date: moment().format('YYYY-MM-DD HH:mm:ss'),
+      password_update_date: moment().format('YYYY-MM-DD HH:mm:ss'),
+      create_time: moment().format('YYYY-MM-DD HH:mm:ss')
     }, (error, results) => {
       if (error) return response.cc(error)
       if (results.affectedRows === 0) return response.cc('注册用户失败，请稍后再试！')
@@ -37,9 +40,10 @@ exports.register = (request, response) => {
 
 // 账号登录的处理函数
 exports.login = (request, response) => {
-  db.query(`select * from sys_user where username = ?`, request.body.username, (error, results) => {
+  const sql = `select * from sys_user where username = ?`
+  db.query(sql, request.body.username, (error, results) => {
     if (error) return response.cc(error)
-    if (results.length !== 1) return response.cc('登录失败！')
+    if (results.length !== 1) return response.cc('用户不存在！')
 
     request.body.password = md5(md5(request.body.password + results[0].salt)) // 两次 md5 加密
     if (!bcrypt.compareSync(request.body.password, results[0].password) && results[0].password !== '123456') return response.cc('登录失败！') // 校验密码
@@ -56,10 +60,11 @@ exports.login = (request, response) => {
 }
 
 // 手机登录的处理函数
-exports.loginphone = (request, response) => {
-  db.query(`select * from sys_user where phone = ?`, request.body.phone, (error, results) => {
+exports.loginPhone = (request, response) => {
+  const sql = `select * from sys_user where phone = ?`
+  db.query(sql, request.body.phone, (error, results) => {
     if (error) return response.cc(error)
-    if (results.length !== 1) return response.cc('登录失败！')
+    if (results.length !== 1) return response.cc('手机不存在！')
 
     request.body.password = md5(md5(request.body.password + results[0].salt)) // 两次 md5 加密
     if (!bcrypt.compareSync(request.body.password, results[0].password) && results[0].password !== '123456') return response.cc('登录失败！') // 校验密码
@@ -72,5 +77,43 @@ exports.loginphone = (request, response) => {
       message: '登录成功！',
       token: 'Bearer ' + tokenStr
     })
+  })
+}
+
+// 获取验证码的处理函数
+exports.getCheckCode = (request, response) => {
+  const sql = `select * from sys_user where email = ?`
+  db.query(sql, request.body.email, (error, results) => {
+    if (error) return response.cc(error)
+    if (results.length !== 1) return response.cc('邮箱不存在！')
+    if (request.body.email !== results[0].email) return response.cc('邮箱错误！') // 校验邮箱
+
+    const str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+    let checkCode = ''
+    for (let i = 0; i < 4; i++) {
+      checkCode += str.charAt(Math.floor(Math.random() * str.length))
+    }
+    request.session.userId = results[0].id
+    request.session.checkCode = checkCode
+
+    response.send({ // 将生成的 Token 字符串响应给客户端
+      status: 200,
+      message: '获取成功！',
+      checkCode
+    })
+  })
+}
+
+// 重置密码的处理函数
+exports.resetPassword = (request, response) => {
+  if ((request.body.checkCode + '').toLowerCase() !== (request.session.checkCode + '').toLowerCase()) return response.cc('验证码错误！')
+
+  const sql = `update sys_user set password = ?, password_update_date = now() where id = ?`
+  db.query(sql, [request.body.newPassword, request.session.userId], (error, results) => {
+    if (error) return response.cc(error)
+    if (results.affectedRows === 0) return response.cc('重置密码失败，请稍后再试！')
+    delete request.session.userId
+    delete request.session.checkCode
+    response.cc('重置成功！', 200)
   })
 }

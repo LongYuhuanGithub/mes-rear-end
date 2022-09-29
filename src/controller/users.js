@@ -1,4 +1,4 @@
-const db = require('../db')
+const db = require('../config')
 const config = require('../config') // 导入配置文件
 const bcrypt = require('bcryptjs') // 导入加密模块
 const jwt = require('jsonwebtoken') // 用这个包来生成 Token 字符串
