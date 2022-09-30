@@ -1,5 +1,5 @@
 const express = require('express')
-const menuHandler = require('../controller/menus') // 导入路由处理函数模块
+const menuHandler = require('../controller/menuController') // 导入路由处理函数模块
 
 const router = express.Router()
 

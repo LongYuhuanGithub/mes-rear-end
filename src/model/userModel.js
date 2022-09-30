@@ -11,7 +11,6 @@ const joi = require('joi')
  * pattern(正则表达式): 表示值必须符合正则表达式的规则
  */
 
-
 const id = joi.number().integer().min(1).required() // ID的验证规则
 const roleIds = joi.array().items(joi.number().integer().min(1)).required() // 角色ID数组的验证规则
 const username = joi.string().alphanum().min(1).max(10).required() // 用户名的验证规则

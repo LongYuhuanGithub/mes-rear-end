@@ -1,7 +1,7 @@
 const express = require('express')
 const expressJoi = require('@escook/express-joi') // 导入验证表单数据的中间件
-const { registerSchema, loginSchema, loginPhoneSchema, getCheckCodeSchema, resetPasswordSchema } = require('../model/api') // 导入需要的验证规则对象
-const apiHandler = require('../controller/api') // 导入路由处理函数模块
+const { registerSchema, loginSchema, loginPhoneSchema, getCheckCodeSchema, resetPasswordSchema } = require('../model/apiModel') // 导入需要的验证规则对象
+const apiHandler = require('../controller/apiController') // 导入路由处理函数模块
 
 const router = express.Router()
 

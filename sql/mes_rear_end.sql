@@ -60,17 +60,23 @@ create table sys_menu(
     icon varchar(100) default 'menu' comment '菜单图标'
 ) engine=InnoDB default charset=utf8 comment = '菜单权限表';
 select * from sys_menu;
-insert into sys_menu values(0, '系统管理', 0, 1, '/home', 'M', '0', 'setting');
-insert into sys_menu values(0, '用户管理', 1, 1, '/home/users', 'C', '1', '');
-insert into sys_menu values(0, '角色管理', 1, 2, '/home/roles', 'C', '1', '');
-insert into sys_menu values(0, '菜单管理', 1, 3, '/home/menus', 'C', '1', '');
-insert into sys_menu values(0, '部门管理', 1, 4, '/home/departments', 'C', '1', '');
-insert into sys_menu values(0, '岗位管理', 1, 5, '/home/positions', 'C', '1', '');
-insert into sys_menu values(0, '字典管理', 1, 6, '/home/dictionaries', 'C', '1', '');
-insert into sys_menu values(0, '参数设置', 1, 7, '/home/parameters', 'C', '1', '');
-insert into sys_menu values(0, '通知公告', 1, 8, '/home/notifications', 'C', '1', '');
-insert into sys_menu values(0, '日志管理', 1, 9, '/home/logs', 'C', '1', '');
-insert into sys_menu values(0, '系统监控', 0, 2, '/control', 'M', '0', 'videocameraadd');
+# M目录
+insert into sys_menu values(1, '系统管理', 0, 1, '/home', 'M', '0', 'setting');
+insert into sys_menu values(2, '系统监控', 0, 2, '/control', 'M', '0', 'videocameraadd');
+# C菜单
+insert into sys_menu values(3, '用户管理', 1, 1, '/home/users', 'C', '1', '');
+insert into sys_menu values(4, '角色管理', 1, 2, '/home/roles', 'C', '1', '');
+insert into sys_menu values(5, '菜单管理', 1, 3, '/home/menus', 'C', '1', '');
+insert into sys_menu values(6, '部门管理', 1, 4, '/home/departments', 'C', '1', '');
+insert into sys_menu values(7, '岗位管理', 1, 5, '/home/positions', 'C', '1', '');
+insert into sys_menu values(8, '字典管理', 1, 6, '/home/dictionaries', 'C', '1', '');
+insert into sys_menu values(9, '参数设置', 1, 7, '/home/parameters', 'C', '1', '');
+insert into sys_menu values(10, '通知公告', 1, 8, '/home/notifications', 'C', '1', '');
+insert into sys_menu values(11, '日志管理', 1, 9, '/home/logs', 'C', '1', '');
+# F按钮
+insert into sys_menu values(12, '添加用户', 3, 1, '/home/users/add', 'F', '1', 'plus');
+insert into sys_menu values(13, '修改用户', 3, 2, '/home/users/update', 'F', '1', 'edit-square');
+insert into sys_menu values(14, '删除用户', 3, 3, '/home/users/delete', 'F', '1', 'close');
 
 -- 用户和角色关系表
 drop table if exists sys_user_role;

@@ -4,12 +4,12 @@ const expressJWT = require('express-jwt') // 解析 Token 的中间件
 const moment = require('moment')
 const config = require('./utils/globalUtils') // 导入配置文件
 // 导入自定义中间件
-const response = require('./middleware/response')
-const error = require('./middleware/error')
+const response = require('./middleware/responseMiddleware')
+const error = require('./middleware/errorMiddleware')
 // 导入路由模块
-const apiRouter = require('./router/api')
-const userRouter = require('./router/users')
-const menusRouter = require('./router/menus')
+const apiRouter = require('./router/apiRouter')
+const userRouter = require('./router/userRouter')
+const menusRouter = require('./router/menuRouter')
 
 const app = express()
 moment.locale('zh-cn')
