@@ -1,7 +1,5 @@
 const db = require('../config')
-const config = require('../utils/config') // 导入配置文件
 const bcrypt = require('bcryptjs') // 导入加密模块
-const jwt = require('jsonwebtoken')
 const md5 = require("md5");
 const moment = require("moment"); // 用这个包来生成 Token 字符串
 
@@ -32,21 +30,35 @@ exports.getUserById = (request, response) => {
 }
 
 // 添加用户的处理函数
-exports.addUser = (request, response) => {
-  let sql = `select count(1) from sys_user where is_delete = 0 and username = ?`
-  db.query(sql, [request.body.username], (error, results) => { // 检测用户名是否被占用
-    if (error) return response.cc(error)
-    if (results[0]['count(1)'] > 0) return response.cc('用户名被占用，请更换其他用户名！') // 用户名被占用
+exports.addUser = async (request, response) => {
+  let sql, result
 
-    const salt = Math.floor(Math.random() * 9000000000) + 1000000000 // 随机生成一个盐
-    request.body.password = md5(md5(request.body.password + salt)) // 两次 md5 加密
-    request.body.password = bcrypt.hashSync(request.body.password, 10) // bcryptjs 加密
+  // 校验重复
+  result = await new Promise((resolve, reject) => {
+    sql = `select * from sys_user where is_delete = 0 and (username = ? or email = ? or phone = ?)`
+    db.query(sql, [request.body.username, request.body.email, request.body.phone], (error, results) => {
+      if (error) return reject({ flag: true, error })
+      if (results.length > 0) {
+        if (results[0].username === request.body.username) return reject({ flag: true, error: '用户名被占用，请更换其他用户名！' })
+        if (results[0].email === request.body.email) return reject({ flag: true, error: '邮箱被占用，请更换其他邮箱！' })
+        if (results[0].phone === request.body.phone) return reject({ flag: true, error: '手机被占用，请更换其他手机！' })
+      }
 
+      const salt = Math.floor(Math.random() * 9000000000) + 1000000000 // 随机生成一个盐
+      request.body.password = md5(md5(request.body.password + salt)) // 两次 md5 加密
+      request.body.password = bcrypt.hashSync(request.body.password, 10) // bcryptjs 加密
+      resolve({ flag: false, salt })
+    })
+  }).catch(error => error)
+  if (result.flag) return response.cc(result.error)
+
+  // 添加用户
+  result = await new Promise((resolve, reject) => {
     sql = `insert into sys_user set ?`
-    db.query(sql, { // 添加用户
+    db.query(sql, {
       username: request.body.username,
       password: request.body.password,
-      salt,
+      salt: result.salt,
       user_type: '00',
       email: request.body.email,
       phone: request.body.phone,
@@ -57,31 +69,115 @@ exports.addUser = (request, response) => {
       create_time: moment().format('YYYY-MM-DD HH:mm:ss'),
       remark: request.body.remark
     }, (error, results) => {
-      if (error) return response.cc(error)
-      if (!results.affectedRows) return response.cc('添加用户失败，请稍后再试！')
-
-      // 添加用户角色关系
-      sql = `insert into sys_user_role values(?, ?)`
-      db.query(sql, [results.insertId, request.body.role_id], (error, results) => {
-        if (error) return response.cc(error)
-        if (!results.affectedRows) return response.cc('添加用户角色关系失败，请稍后再试！')
-        response.cc('添加成功！', 200)
-      })
+      if (error) return reject({ flag: true, error })
+      if (!results.affectedRows) return reject({ flag: true, error: '添加用户失败，请稍后再试！' })
+      resolve({ flag: false, insertId: results.insertId })
     })
-  })
+  }).catch(error => error)
+  if (result.flag) return response.cc(result.error)
+
+  // 添加用户角色关系
+  const user_id = result.insertId
+  for (let i = 0, length = request.body.roleIds.length; i < length; i++) {
+    result = await new Promise((resolve, reject) => {
+      sql = `insert into sys_user_role values(?, ?)`
+      db.query(sql, [user_id, request.body.roleIds[i]], (error, results) => {
+        if (error) return reject(error)
+        if (!results.affectedRows) return reject('添加用户角色关系失败，请稍后再试！')
+        resolve()
+      })
+    }).catch(error => error)
+    if (result) return response.cc(result)
+  }
+
+  response.cc('添加成功！', 200)
 }
 
 // 删除用户的处理函数
-exports.deleteUser = (request, response) => {
-  const sql = `update sys_user set is_delete = ? where id = ?`
-  db.query(sql, [1, request.params.id], (error, results) => { // 将 is_delete 改成 1 表示删除
-    if (error) return response.cc(error)
-    if (!results.affectedRows) return response.cc('删除用户失败，请稍后再试！')
-    response.cc('删除成功！', 200)
-  })
+exports.deleteUser = async (request, response) => {
+  let sql, result
+
+  // 将 is_delete 改成 1，表示删除
+  result = await new Promise((resolve, reject) => {
+    sql = `update sys_user set is_delete = ? where id = ?`
+    db.query(sql, [1, request.params.id], (error, results) => {
+      if (error) return reject(error)
+      if (!results.affectedRows) return reject('删除用户失败，请稍后再试！')
+      resolve()
+    })
+  }).catch(error => error)
+  if (result) return response.cc(result)
+
+  // 删除用户角色关系
+  result = await new Promise((resolve, reject) => {
+    sql = `delete from sys_user_role where user_id = ?`
+    db.query(sql, [request.params.id], (error, results) => {
+      if (error) return reject(error)
+      if (!results.affectedRows) return reject('删除用户角色关系失败，请稍后再试！')
+      resolve()
+    })
+  }).catch(error => error)
+  if (result) return response.cc(result)
+
+  response.cc('删除成功！', 200)
 }
 
 // 修改用户的处理函数
-exports.updateUser = (request, response) => {
-  console.log(request, response)
+exports.updateUser = async (request, response) => {
+  let sql, result
+
+  // 校验重复
+  result = await new Promise((resolve, reject) => {
+    sql = `select * from sys_user where is_delete = 0 and id != ? and (email = ? or phone = ?)`
+    db.query(sql, [request.body.id, request.body.email, request.body.phone], (error, results) => {
+      if (error) return reject(error)
+      if (results.length > 0) {
+        if (results[0].email === request.body.email) return reject('邮箱被占用，请更换其他邮箱！')
+        if (results[0].phone === request.body.phone) return reject('手机被占用，请更换其他手机！')
+      }
+      resolve()
+    })
+  }).catch(error => error)
+  if (result) return response.cc(result)
+
+  // 修改用户
+  result = await new Promise((resolve, reject) => {
+    sql = `update sys_user set ? where id = ?`
+    db.query(sql, [{
+      email: request.body.email,
+      phone: request.body.phone,
+      gender: request.body.gender,
+      remark: request.body.remark
+    }, request.body.id], (error, results) => {
+      if (error) return reject(error)
+      if (!results.affectedRows) return reject('修改用户失败，请稍后再试！')
+      resolve()
+    })
+  }).catch(error => error)
+  if (result) return response.cc(result)
+
+  // 删除用户角色关系
+  result = await new Promise((resolve, reject) => {
+    sql = `delete from sys_user_role where user_id = ?`
+    db.query(sql, [request.body.id], (error, results) => {
+      if (error) return reject(error)
+      if (!results.affectedRows) return reject('修改用户角色关系失败，请稍后再试！')
+      resolve()
+    })
+  }).catch(error => error)
+  if (result) return response.cc(result)
+
+  // 添加用户角色关系
+  for (let i = 0, length = request.body.roleIds.length; i < length; i++) {
+    result = await new Promise((resolve, reject) => {
+      sql = `insert into sys_user_role values(?, ?)`
+      db.query(sql, [request.body.id, request.body.roleIds[i]], (error, results) => {
+        if (error) return reject(error)
+        if (!results.affectedRows) return reject('修改用户角色关系失败，请稍后再试！')
+        resolve()
+      })
+    }).catch(error => error)
+    if (result) return response.cc(result)
+  }
+  response.cc('修改成功！', 200)
 }

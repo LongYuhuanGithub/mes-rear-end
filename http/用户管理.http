@@ -18,13 +18,27 @@ Authorization: {{token}}
   "password": "123456",
   "email": "wangwu@qq.com",
   "phone": "13200000002",
-  "gender": "1",
+  "gender": "0",
   "create_by": "admin",
   "remark": "测试",
-  "role_id": 2
+  "roleIds": [1, 2]
 }
 
 ### 删除用户
-DELETE {{baseUrl}}/users/3
+DELETE {{baseUrl}}/users/4
 Accept: application/json
 Authorization: {{token}}
+
+### 修改用户
+PUT {{baseUrl}}/users
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "id": 4,
+  "email": "wangwu111@qq.com",
+  "phone": "13200001112",
+  "gender": "1",
+  "remark": "测试111",
+  "roleIds": [1]
+}

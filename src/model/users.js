@@ -11,7 +11,9 @@ const joi = require('joi')
  * pattern(正则表达式): 表示值必须符合正则表达式的规则
  */
 
+
 const id = joi.number().integer().min(1).required() // ID的验证规则
+const roleIds = joi.array().items(joi.number().integer().min(1)).required() // 角色ID数组的验证规则
 const username = joi.string().alphanum().min(1).max(10).required() // 用户名的验证规则
 const password = joi.string().pattern(/^\S{6,12}$/).required() // 密码的验证规则
 const email = joi.string().email().required() // 邮箱的验证规则
@@ -28,12 +30,18 @@ exports.addUserSchema = {
     gender,
     create_by: joi.string().required(),
     remark: joi.string().required(),
-    role_id: id
+    roleIds
   }
 }
 
 // 修改用户的验证规则对象
 exports.updateUserSchema = {
   body: {
+    id,
+    email,
+    phone,
+    gender,
+    remark: joi.string().required(),
+    roleIds
   }
 }

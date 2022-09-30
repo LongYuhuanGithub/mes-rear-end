@@ -6,12 +6,12 @@ drop table if exists sys_user;
 create table sys_user(
     id bigint not null primary key auto_increment comment '用户ID',
     dept varchar(20) default null comment '部门',
-    username varchar(30) default '' unique comment '用户名称',
+    username varchar(30) default '' comment '用户名称',
     password varchar(255) default '' comment '密码',
     salt varchar(20) default '' comment '盐加密',
     user_type varchar(2) default '00' comment '用户类型（00系统用户 01注册用户）',
-    email varchar(50) default '' unique comment '邮箱',
-    phone varchar(11) default '' unique comment '手机号码',
+    email varchar(50) default '' comment '邮箱',
+    phone varchar(11) default '' comment '手机号码',
     gender char(1) default '0' comment '用户性别（0男 1女 2未知）',
     status char(1) default '0' comment '帐号状态（0正常 1停用）',
     login_date datetime comment '最后登录时间',
@@ -23,17 +23,19 @@ create table sys_user(
 ) engine=InnoDB default charset=utf8 comment = '用户信息表';
 select * from sys_user;
 select * from sys_user where is_delete = 0;
-select id, dept, username, user_type, email, phone, gender, status, login_date, password_update_date, create_by, create_time, remark from sys_user where is_delete = 0;
+# select count(1) from sys_user where is_delete = 0 and (username = 'adminaaa' or email = '2630819701@qq.com' or phone = '17374000851aaa');
+# select id, dept, username, user_type, email, phone, gender, status, login_date, password_update_date, create_by, create_time, remark from sys_user where is_delete = 0;
 insert into sys_user values(0, '市场部', 'admin', '123456', 'longyuhuan.com', '00', '2630819701@qq.com', '17374000851', '0', '0', now(), now(), 'admin', now(), '管理员', 0);
 insert into sys_user values(0, '开发部', 'zhangsan', '123456', 'longyuhuan.com', '00', 'zhangsan@qq.com', '13200000000', '0', '0', now(), now(), 'admin', now(), '测试员', 0);
 # update sys_user set password = '123456', password_update_date = now() where id = 1;
-update sys_user set is_delete = 1 where id = 1;
+# update sys_user set is_delete = 1 where id = 1;
+# update sys_user set login_date = now() where id = 1;
 
 -- 角色表
 drop table if exists sys_role;
 create table sys_role(
     id bigint not null primary key auto_increment comment '角色ID',
-    role_name varchar(30) not null unique comment '角色名称',
+    role_name varchar(30) not null comment '角色名称',
     sort int(4) not null comment '显示顺序',
     status char(1) not null comment '角色状态（0正常 1停用）',
     create_by varchar(64) default '' comment '创建者',
@@ -82,6 +84,7 @@ create table sys_user_role(
 select * from sys_user_role;
 insert into sys_user_role values(1, 1);
 insert into sys_user_role values(2, 2);
+# delete from sys_user_role where user_id = 3;
 
 
 -- 角色和菜单关系表

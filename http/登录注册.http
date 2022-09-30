@@ -33,7 +33,7 @@ POST {{baseUrl}}/api/getcheckcode
 Content-Type: application/json
 
 {
-  "email": "lisi@163.com"
+  "email": "lisi@qq.com"
 }
 
 ### 重置密码

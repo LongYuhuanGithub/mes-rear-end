@@ -77,7 +77,7 @@ router.get('/:id', userHandler.getUserById)
 
 /**
  * @api {post} /users 03-添加用户
- * @apiName PostUserAdd
+ * @apiName PostUser
  * @apiGroup Users
  *
  * @apiParam {String} username 用户名称
@@ -87,7 +87,7 @@ router.get('/:id', userHandler.getUserById)
  * @apiParam {String} gender 性别（0男 1女 2未知）
  * @apiParam {String} create_by 创建者的用户名
  * @apiParam {String} remark 备注
- * @apiParam {Number} role_id 角色ID
+ * @apiParam {Number[]} roleIds 角色ID的数组
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
@@ -101,7 +101,7 @@ router.post('/', expressJoi(addUserSchema), userHandler.addUser)
 
 /**
  * @api {delete} /users/:id 04-删除用户
- * @apiName PostUserDelete
+ * @apiName DeleteUser
  * @apiGroup Users
  *
  * @apiParam {Number} id 用户ID，写在地址栏中
@@ -116,6 +116,26 @@ router.post('/', expressJoi(addUserSchema), userHandler.addUser)
  */
 router.delete('/:id', userHandler.deleteUser)
 
+/**
+ * @api {put} /users 05-修改用户
+ * @apiName PutUser
+ * @apiGroup Users
+ *
+ * @apiParam {Number} id 用户ID
+ * @apiParam {String} email 邮箱
+ * @apiParam {String} phone 手机
+ * @apiParam {String} gender 性别（0男 1女 2未知）
+ * @apiParam {String} remark 备注
+ * @apiParam {Number[]} roleIds 角色ID的数组
+ *
+ * @apiSuccess {Number} status 状态码
+ * @apiSuccess {String} message 消息
+ * @apiSuccessExample {json} 响应数据示例
+ * {
+ *   "status": 200,
+ *   "message": "修改成功！"
+ * }
+ */
 router.put('/', expressJoi(updateUserSchema), userHandler.updateUser)
 
 module.exports = router

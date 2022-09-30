@@ -1,4 +1,4 @@
-// 全局配置文件
+// 全局工具文件
 
 module.exports = {
   jwtSecretKey: 'LongYuhuan', // 加密和解密 Token 的密钥

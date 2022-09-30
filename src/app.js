@@ -2,7 +2,7 @@ const express = require('express')
 const cors = require('cors') // 解决跨域问题
 const expressJWT = require('express-jwt') // 解析 Token 的中间件
 const moment = require('moment')
-const config = require('./utils/config') // 导入配置文件
+const config = require('./utils/globalUtils') // 导入配置文件
 // 导入自定义中间件
 const response = require('./middleware/response')
 const error = require('./middleware/error')

@@ -1,5 +1,5 @@
 const db = require('../config')
-const config = require('../utils/config') // 导入配置文件
+const config = require('../utils/globalUtils') // 导入配置文件
 const md5 = require('md5') // 导入 md5 加密
 const bcrypt = require('bcryptjs') // 导入加密模块
 const jwt = require('jsonwebtoken') // 用这个包来生成 Token 字符串
@@ -8,22 +8,35 @@ const moment = require('moment')
 const serverData = {} // 记录一些数据，如验证码
 
 // 注册用户的处理函数
-exports.register = (request, response) => {
-  let sql = `select count(1) from sys_user where is_delete = 0 and username = ?`
-  db.query(sql, [request.body.username], (error, results) => { // 检测用户名是否被占用
-    if (error) return response.cc(error)
-    if (results[0]['count(1)'] > 0) return response.cc('用户名被占用，请更换其他用户名！') // 用户名被占用
+exports.register = async (request, response) => {
+  let sql, result
 
-    const salt = Math.floor(Math.random() * 9000000000) + 1000000000 // 随机生成一个盐
-    request.body.password = md5(md5(request.body.password + salt)) // 两次 md5 加密
-    request.body.password = bcrypt.hashSync(request.body.password, 10) // bcryptjs 加密
+  // 校验重复
+  result = await new Promise((resolve, reject) => {
+    sql = `select * from sys_user where is_delete = 0 and (username = ? or email = ? or phone = ?)`
+    db.query(sql, [request.body.username, request.body.email, request.body.phone], (error, results) => {
+      if (error) return reject({ flag: true, error })
+      if (results.length > 0) {
+        if (results[0].username === request.body.username) return reject({ flag: true, error: '用户名被占用，请更换其他用户名！' })
+        if (results[0].email === request.body.email) return reject({ flag: true, error: '邮箱被占用，请更换其他邮箱！' })
+        if (results[0].phone === request.body.phone) return reject({ flag: true, error: '手机被占用，请更换其他手机！' })
+      }
 
-    // 添加用户
+      const salt = Math.floor(Math.random() * 9000000000) + 1000000000 // 随机生成一个盐
+      request.body.password = md5(md5(request.body.password + salt)) // 两次 md5 加密
+      request.body.password = bcrypt.hashSync(request.body.password, 10) // bcryptjs 加密
+      resolve({ flag: false, salt })
+    })
+  }).catch(error => error)
+  if (result.flag) response.cc(result.error)
+
+  // 添加用户
+  result = await new Promise((resolve, reject) => {
     sql = `insert into sys_user set ?`
     db.query(sql, {
       username: request.body.username,
       password: request.body.password,
-      salt,
+      salt: result.salt,
       user_type: '01',
       email: request.body.email,
       phone: request.body.phone,
@@ -32,67 +45,114 @@ exports.register = (request, response) => {
       password_update_date: moment().format('YYYY-MM-DD HH:mm:ss'),
       create_time: moment().format('YYYY-MM-DD HH:mm:ss')
     }, (error, results) => {
-      if (error) return response.cc(error)
-      if (!results.affectedRows) return response.cc('注册用户失败，请稍后再试！')
-
-      // 添加用户角色关系
-      sql = `insert into sys_user_role values(?, 2)`
-      db.query(sql, [results.insertId], (error, results) => {
-        if (error) return response.cc(error)
-        if (!results.affectedRows) return response.cc('添加用户角色关系失败，请稍后再试！')
-        response.cc('注册成功！', 200)
-      })
+      if (error) return reject({ flag: true, error })
+      if (!results.affectedRows) return reject({ flag: true, error: '注册用户失败，请稍后再试！' })
+      resolve({ flag: false, insertId: results.insertId })
     })
-  })
+  }).catch(error => error)
+  if (result.flag) response.cc(result.error)
+
+  // 添加用户角色关系
+  result = await new Promise((resolve, reject) => {
+    sql = `insert into sys_user_role values(?, 2)`
+    db.query(sql, [result.insertId], (error, results) => {
+      if (error) return reject(error)
+      if (!results.affectedRows) return reject('添加用户角色关系失败，请稍后再试！')
+      resolve()
+    })
+  }).catch(error => error)
+  if (result) response.cc(result)
+
+  response.cc('注册成功！', 200)
 }
 
 // 账号登录的处理函数
-exports.login = (request, response) => {
-  const sql = `select * from sys_user where is_delete = 0 and username = ?`
-  db.query(sql, request.body.username, (error, results) => {
-    if (error) return response.cc(error)
-    if (results.length !== 1) return response.cc('用户不存在！')
+exports.login = async (request, response) => {
+  let sql, result
 
-    request.body.password = md5(md5(request.body.password + results[0].salt)) // 两次 md5 加密
-    if (!bcrypt.compareSync(request.body.password, results[0].password) && results[0].password !== '123456') return response.cc('登录失败！') // 校验密码
+  // 校验信息并生成 token
+  result = await new Promise((resolve, reject) => {
+    sql = `select * from sys_user where is_delete = 0 and username = ?`
+    db.query(sql, request.body.username, (error, results) => {
+      if (error) return reject({ flag: true, error })
+      if (results.length !== 1) return reject({ flag: true, error: '用户不存在！' })
 
-    const user = { ...results[0] }
-    delete user.password // 剔除 password 属性
-    delete user.salt
-    delete user.is_delete
-    const tokenStr = jwt.sign(user, config.jwtSecretKey, { expiresIn: config.expiresIn }) // 生成 Token 字符串
+      request.body.password = md5(md5(request.body.password + results[0].salt)) // 两次 md5 加密
+      if (!bcrypt.compareSync(request.body.password, results[0].password) && results[0].password !== '123456')
+        return reject({ flag: true, error: '登录失败！' }) // 校验密码
 
-    response.send({ // 将生成的 Token 字符串响应给客户端
-      status: 200,
-      message: '登录成功！',
-      token: 'Bearer ' + tokenStr,
-      data: user
+      const user = { ...results[0] }
+      delete user.password // 剔除 password 属性
+      delete user.salt
+      delete user.is_delete
+      const token = jwt.sign(user, config.jwtSecretKey, { expiresIn: config.expiresIn }) // 生成 Token 字符串
+      resolve({ flag: false, token, user })
     })
+  }).catch(error => error)
+  if (result.flag) response.cc(result.error)
+
+  const token = result.token, user = result.user // 转存 token 和 user
+
+  result = await new Promise((resolve, reject) => {
+    sql = `update sys_user set login_date = now() where id = ?`
+    db.query(sql, [user.id], (error, results) => {
+      if (error) return reject(error)
+      if (!results.affectedRows) return reject('修改最后登录时间失败，请稍后再试！')
+      resolve()
+    })
+  }).catch(error => error)
+  if (result) response.cc(result)
+
+  response.send({ // 将生成的 Token 字符串响应给客户端
+    status: 200,
+    message: '登录成功！',
+    token: 'Bearer ' + token,
+    data: user
   })
 }
 
 // 手机登录的处理函数
-exports.loginPhone = (request, response) => {
-  const sql = `select * from sys_user where is_delete = 0 and phone = ?`
-  db.query(sql, request.body.phone, (error, results) => {
-    if (error) return response.cc(error)
-    if (results.length !== 1) return response.cc('手机不存在！')
+exports.loginPhone = async (request, response) => {
+  let sql, result
 
-    request.body.password = md5(md5(request.body.password + results[0].salt)) // 两次 md5 加密
-    if (!bcrypt.compareSync(request.body.password, results[0].password) && results[0].password !== '123456') return response.cc('登录失败！') // 校验密码
+  // 校验信息并生成 token
+  result = await new Promise((resolve, reject) => {
+    sql = `select * from sys_user where is_delete = 0 and phone = ?`
+    db.query(sql, request.body.phone, (error, results) => {
+      if (error) return reject({ flag: true, error })
+      if (results.length !== 1) return reject({ flag: true, error: '用户不存在！' })
 
-    const user = { ...results[0] }
-    delete user.password // 剔除 password 属性
-    delete user.salt
-    delete user.is_delete
-    const tokenStr = jwt.sign(user, config.jwtSecretKey, { expiresIn: config.expiresIn }) // 生成 Token 字符串
+      request.body.password = md5(md5(request.body.password + results[0].salt)) // 两次 md5 加密
+      if (!bcrypt.compareSync(request.body.password, results[0].password) && results[0].password !== '123456')
+        return reject({ flag: true, error: '登录失败！' }) // 校验密码
 
-    response.send({ // 将生成的 Token 字符串响应给客户端
-      status: 200,
-      message: '登录成功！',
-      token: 'Bearer ' + tokenStr,
-      data: user
+      const user = { ...results[0] }
+      delete user.password // 剔除 password 属性
+      delete user.salt
+      delete user.is_delete
+      const token = jwt.sign(user, config.jwtSecretKey, { expiresIn: config.expiresIn }) // 生成 Token 字符串
+      resolve({ flag: false, token, user })
     })
+  }).catch(error => error)
+  if (result.flag) response.cc(result.error)
+
+  const token = result.token, user = result.user // 转存 token 和 user
+
+  result = await new Promise((resolve, reject) => {
+    sql = `update sys_user set login_date = now() where id = ?`
+    db.query(sql, [user.id], (error, results) => {
+      if (error) return reject(error)
+      if (!results.affectedRows) return reject('修改最后登录时间失败，请稍后再试！')
+      resolve()
+    })
+  }).catch(error => error)
+  if (result) response.cc(result)
+
+  response.send({ // 将生成的 Token 字符串响应给客户端
+    status: 200,
+    message: '登录成功！',
+    token: 'Bearer ' + token,
+    data: user
   })
 }
 
@@ -112,8 +172,6 @@ exports.getCheckCode = (request, response) => {
     serverData.userId = results[0].id
     serverData.salt = results[0].salt
     serverData.checkCode = checkCode
-
-    console.log(request.body.checkCode, serverData.checkCode)
 
     response.send({ // 将生成的 Token 字符串响应给客户端
       status: 200,
