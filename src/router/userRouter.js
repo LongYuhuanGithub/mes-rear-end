@@ -1,6 +1,6 @@
 const express = require('express')
 const expressJoi = require('@escook/express-joi') // 导入验证表单数据的中间件
-const { addUserSchema, deleteUserSchema, updateUserSchema } = require('../model/userModel') // 导入需要的验证规则对象
+const { getUserListSchema, addUserSchema, updateUserSchema } = require('../model/userModel') // 导入需要的验证规则对象
 const userHandler = require('../controller/userController') // 导入路由处理函数模块
 
 const router = express.Router()
@@ -11,6 +11,12 @@ const router = express.Router()
  * @apiGroup Users
  *
  * @apiHeader {String} Authorization Token令牌
+ *
+ * @apiParam {Number} current 必需，当前页数，写在地址栏中
+ * @apiParam {Number} size 必需，一页显示几行，写在地址栏中
+ * @apiParam {String} username 可选，要搜索的用户名，写在地址栏中
+ * @apiParam {String} phone 可选，要搜索的手机号，写在地址栏中
+ * @apiParam {String} status 可选，要搜索的账号状态，写在地址栏中
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
@@ -38,7 +44,7 @@ const router = express.Router()
  *   ]
  * }
  */
-router.get('/', userHandler.getUserList)
+router.get('/', expressJoi(getUserListSchema), userHandler.getUserList)
 
 /**
  * @api {get} /users/:id 02-根据ID获取用户

@@ -5,8 +5,20 @@ const moment = require("moment"); // 用这个包来生成 Token 字符串
 
 // 获取用户列表的处理函数
 exports.getUserList = (request, response) => {
-  const sql = `select id, dept, username, user_type, email, phone, gender, status, login_date, password_update_date, create_by, create_time, remark from sys_user where is_delete = 0`
-  db.query(sql, (error, results) => {
+  // 如果没有传递这列参数，就把他们赋值为空字符串，不然模糊查询时会被解析成 %undefined%
+  if (!request.query.username) request.query.username = ''
+  if (!request.query.phone) request.query.phone = ''
+  if (!request.query.status) request.query.status = ''
+
+  // 查询用户
+  const sql = `select id, dept, username, user_type, email, phone, gender, status, login_date, password_update_date, create_by, create_time, remark from sys_user where is_delete = 0 and username like ? and phone like ? and status like ? limit ?, ?`
+  db.query(sql, [
+    `%${request.query.username}%`,
+    `%${request.query.phone}%`,
+    `%${request.query.status}%`,
+    (request.query.current - 1) * request.query.size,
+    request.query.size
+  ], (error, results) => {
     if (error) return response.cc(error)
     response.send({
       status: 200,

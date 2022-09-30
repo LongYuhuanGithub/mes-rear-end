@@ -24,7 +24,7 @@ create table sys_user(
 select * from sys_user;
 select * from sys_user where is_delete = 0;
 # select count(1) from sys_user where is_delete = 0 and (username = 'adminaaa' or email = '2630819701@qq.com' or phone = '17374000851aaa');
-# select id, dept, username, user_type, email, phone, gender, status, login_date, password_update_date, create_by, create_time, remark from sys_user where is_delete = 0;
+# select id, dept, username, user_type, email, phone, gender, status, login_date, password_update_date, create_by, create_time, remark from sys_user where is_delete = 0 and username like '%a%' and phone like '%1%' and status like '%0%' limit 0, 10;
 insert into sys_user values(0, '市场部', 'admin', '123456', 'longyuhuan.com', '00', '2630819701@qq.com', '17374000851', '0', '0', now(), now(), 'admin', now(), '管理员', 0);
 insert into sys_user values(0, '开发部', 'zhangsan', '123456', 'longyuhuan.com', '00', 'zhangsan@qq.com', '13200000000', '0', '0', now(), now(), 'admin', now(), '测试员', 0);
 # update sys_user set password = '123456', password_update_date = now() where id = 1;

@@ -19,6 +19,17 @@ const email = joi.string().email().required() // 邮箱的验证规则
 const phone = joi.string().pattern(/^1[35789]\d{9}$/).required() // 手机的验证规则
 const gender = joi.string().pattern(/^0|1|2$/).required() // 性别的验证规则
 
+// 获取用户列表的验证规则对象
+exports.getUserListSchema = {
+  query: {
+    current: joi.number().integer().required(),
+    size: id,
+    username: joi.string().alphanum().min(1).max(10),
+    phone: joi.string().pattern(/^1[35789]\d{9}$/),
+    status: joi.string().pattern(/^0|1$/)
+  }
+}
+
 // 添加用户的验证规则对象
 exports.addUserSchema = {
   body: {

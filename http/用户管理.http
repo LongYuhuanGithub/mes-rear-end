@@ -1,5 +1,5 @@
 ### 获取用户列表
-GET {{baseUrl}}/users
+GET {{baseUrl}}/users?current=1&size=10
 Accept: application/json
 Authorization: {{token}}
 

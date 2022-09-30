@@ -10,11 +10,11 @@ const router = express.Router()
  * @apiName PostApiRegister
  * @apiGroup PublicApi
  *
- * @apiParam {String} username 用户名称
- * @apiParam {String} password 密码
- * @apiParam {String} email 邮箱
- * @apiParam {String} phone 手机
- * @apiParam {String} gender 性别（0男 1女 2未知）
+ * @apiParam {String} username 必需，用户名称
+ * @apiParam {String} password 必需，密码
+ * @apiParam {String} email 必需，邮箱
+ * @apiParam {String} phone 必需，手机
+ * @apiParam {String} gender 必需，性别（0男 1女 2未知）
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
@@ -31,8 +31,8 @@ router.post('/register', expressJoi(registerSchema), apiHandler.register)
  * @apiName PostApiLogin
  * @apiGroup PublicApi
  *
- * @apiParam {String} username 用户名称
- * @apiParam {String} password 密码
+ * @apiParam {String} username 必需，用户名称
+ * @apiParam {String} password 必需，密码
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
@@ -67,8 +67,8 @@ router.post('/login', expressJoi(loginSchema), apiHandler.login)
  * @apiName PostApiLoginphone
  * @apiGroup PublicApi
  *
- * @apiParam {String} phone 手机号
- * @apiParam {String} password 密码
+ * @apiParam {String} phone 必需，手机号
+ * @apiParam {String} password 必需，密码
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
@@ -103,7 +103,7 @@ router.post('/loginphone', expressJoi(loginPhoneSchema), apiHandler.loginPhone)
  * @apiName PostApiGetcheckcode
  * @apiGroup PublicApi
  *
- * @apiParam {String} email 邮箱
+ * @apiParam {String} email 必需，邮箱
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
@@ -122,9 +122,9 @@ router.post('/getcheckcode', expressJoi(getCheckCodeSchema), apiHandler.getCheck
  * @apiName PostApiResetpassword
  * @apiGroup PublicApi
  *
- * @apiParam {String} checkCode 验证码
- * @apiParam {String} newPassword 新密码
- * @apiParam {String} affirmPassword 确认密码
+ * @apiParam {String} checkCode 必需，验证码
+ * @apiParam {String} newPassword 必需，新密码
+ * @apiParam {String} affirmPassword 必需，确认密码
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
