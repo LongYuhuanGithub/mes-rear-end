@@ -20,6 +20,7 @@ const router = express.Router()
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
+ * @apiSuccess {Number} total 总记录数
  * @apiSuccess {Object[]} data 用户列表数据
  * @apiSuccessExample {json} 响应数据示例
  * {

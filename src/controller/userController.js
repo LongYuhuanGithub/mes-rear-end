@@ -4,27 +4,51 @@ const md5 = require("md5");
 const moment = require("moment"); // 用这个包来生成 Token 字符串
 
 // 获取用户列表的处理函数
-exports.getUserList = (request, response) => {
+exports.getUserList = async (request, response) => {
+  let sql, result
+
   // 如果没有传递这列参数，就把他们赋值为空字符串，不然模糊查询时会被解析成 %undefined%
   if (!request.query.username) request.query.username = ''
   if (!request.query.phone) request.query.phone = ''
   if (!request.query.status) request.query.status = ''
 
-  // 查询用户
-  const sql = `select id, dept, username, user_type, email, phone, gender, status, login_date, password_update_date, create_by, create_time, remark from sys_user where is_delete = 0 and username like ? and phone like ? and status like ? limit ?, ?`
-  db.query(sql, [
-    `%${request.query.username}%`,
-    `%${request.query.phone}%`,
-    `%${request.query.status}%`,
-    (request.query.current - 1) * request.query.size,
-    request.query.size
-  ], (error, results) => {
-    if (error) return response.cc(error)
-    response.send({
-      status: 200,
-      message: '获取用户列表成功！',
-      data: results
+  // 获取总记录数
+  result = await new Promise((resolve, reject) => {
+    sql = `select count(1) from sys_user where is_delete = 0 and username like ? and phone like ? and status like ?`
+    db.query(sql, [
+      `%${request.query.username}%`,
+      `%${request.query.phone}%`,
+      `%${request.query.status}%`
+    ], (error, results) => {
+      if (error) return reject({ flag: true, error })
+      resolve({ flag: false, total: results[0]['count(1)'] })
     })
+  }).catch(error => error)
+  if (result.flag) response.cc(result.error)
+
+  const total = result.total // 转存 total
+
+  // 查询用户，分页
+  result = await new Promise((resolve, reject) => {
+    sql = `select id, dept, username, user_type, email, phone, gender, status, login_date, password_update_date, create_by, create_time, remark from sys_user where is_delete = 0 and username like ? and phone like ? and status like ? limit ?, ?`
+    db.query(sql, [
+      `%${request.query.username}%`,
+      `%${request.query.phone}%`,
+      `%${request.query.status}%`,
+      (request.query.current - 1) * request.query.size,
+      request.query.size
+    ], (error, results) => {
+      if (error) return reject({ flag: true, error })
+      resolve({ flag: false, results })
+    })
+  }).catch(error => error)
+  if (result.flag) response.cc(result.error)
+
+  response.send({
+    status: 200,
+    message: '获取用户列表成功！',
+    total,
+    data: result.results
   })
 }
 
