@@ -62,22 +62,23 @@ create table sys_menu(
 ) engine=InnoDB default charset=utf8 comment = '菜单权限表';
 select * from sys_menu;
 # M目录
-insert into sys_menu values(1, '系统管理', 0, 1, '/home', 'M', '0', 'setting');
-insert into sys_menu values(2, '系统监控', 0, 2, '/control', 'M', '0', 'videocameraadd');
+insert into sys_menu values(1, '首页', 0, 1, '/home/welcome', 'M', '0', 'icon-home-fill');
+insert into sys_menu values(2, '系统管理', 0, 2, '/home', 'M', '0', 'icon-setting-fill');
+insert into sys_menu values(3, '系统监控', 0, 3, '/control', 'M', '0', 'icon-video-fill');
 # C菜单
-insert into sys_menu values(3, '用户管理', 1, 1, '/home/users', 'C', '1', '');
-insert into sys_menu values(4, '角色管理', 1, 2, '/home/roles', 'C', '1', '');
-insert into sys_menu values(5, '菜单管理', 1, 3, '/home/menus', 'C', '1', '');
-insert into sys_menu values(6, '部门管理', 1, 4, '/home/departments', 'C', '1', '');
-insert into sys_menu values(7, '岗位管理', 1, 5, '/home/positions', 'C', '1', '');
-insert into sys_menu values(8, '字典管理', 1, 6, '/home/dictionaries', 'C', '1', '');
-insert into sys_menu values(9, '参数设置', 1, 7, '/home/parameters', 'C', '1', '');
-insert into sys_menu values(10, '通知公告', 1, 8, '/home/notifications', 'C', '1', '');
-insert into sys_menu values(11, '日志管理', 1, 9, '/home/logs', 'C', '1', '');
+insert into sys_menu values(4, '用户管理', 2, 1, '/home/users', 'C', '1', 'icon-appstore-fill');
+insert into sys_menu values(5, '角色管理', 2, 2, '/home/roles', 'C', '1', 'icon-appstore-fill');
+insert into sys_menu values(6, '菜单管理', 2, 3, '/home/menus', 'C', '1', 'icon-appstore-fill');
+insert into sys_menu values(7, '部门管理', 2, 4, '/home/departments', 'C', '1', 'icon-appstore-fill');
+insert into sys_menu values(8, '岗位管理', 2, 5, '/home/positions', 'C', '1', 'icon-appstore-fill');
+insert into sys_menu values(9, '字典管理', 2, 6, '/home/dictionaries', 'C', '1', 'icon-appstore-fill');
+insert into sys_menu values(10, '参数设置', 2, 7, '/home/parameters', 'C', '1', 'icon-appstore-fill');
+insert into sys_menu values(11, '通知公告', 2, 8, '/home/notifications', 'C', '1', 'icon-appstore-fill');
+insert into sys_menu values(12, '日志管理', 2, 9, '/home/logs', 'C', '1', 'icon-appstore-fill');
 # F按钮
-insert into sys_menu values(12, '添加用户', 3, 1, '/home/users/add', 'F', '1', 'plus');
-insert into sys_menu values(13, '修改用户', 3, 2, '/home/users/update', 'F', '1', 'edit-square');
-insert into sys_menu values(14, '删除用户', 3, 3, '/home/users/delete', 'F', '1', 'close');
+insert into sys_menu values(13, '添加用户', 4, 1, '/home/users/add', 'F', '1', 'icon-plus');
+insert into sys_menu values(14, '修改用户', 4, 2, '/home/users/update', 'F', '1', 'icon-edit-square');
+insert into sys_menu values(15, '删除用户', 4, 3, '/home/users/delete', 'F', '1', 'icon-close');
 
 -- 用户和角色关系表
 drop table if exists sys_user_role;
@@ -115,3 +116,7 @@ insert into sys_role_menu values(1, 8);
 insert into sys_role_menu values(1, 9);
 insert into sys_role_menu values(1, 10);
 insert into sys_role_menu values(1, 11);
+insert into sys_role_menu values(1, 12);
+insert into sys_role_menu values(1, 13);
+insert into sys_role_menu values(1, 14);
+insert into sys_role_menu values(1, 15);
