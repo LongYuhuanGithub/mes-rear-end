@@ -10,10 +10,12 @@ const error = require('./middleware/errorMiddleware')
 const apiRouter = require('./router/apiRouter')
 const userRouter = require('./router/userRouter')
 const menusRouter = require('./router/menuRouter')
+const roleRouter = require('./router/roleRouter')
 
 const app = express()
 moment.locale('zh-cn')
 
+// 注册第三方中间件
 app.use(express.urlencoded({ extended: false })) // Content-Type: application/x-www-form-urlencoded
 app.use(express.json()) // 解析 Content-Type: application/json
 app.use(cors())
@@ -26,6 +28,7 @@ app.use(response)
 app.use('/api', apiRouter)
 app.use('/users', userRouter)
 app.use('/menus', menusRouter)
+app.use('/roles', roleRouter)
 
 // 错误级别的中间件
 app.use(error)

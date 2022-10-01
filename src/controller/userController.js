@@ -28,7 +28,7 @@ exports.getUserList = async (request, response) => {
 
   const total = result.total // 转存 total
 
-  // 查询用户，分页
+  // 分页查询用户列表
   result = await new Promise((resolve, reject) => {
     sql = `select id, dept, username, user_type, email, phone, gender, status, login_date, password_update_date, create_by, create_time, remark from sys_user where is_delete = 0 and username like ? and phone like ? and status like ? limit ?, ?`
     db.query(sql, [
@@ -135,8 +135,8 @@ exports.deleteUser = async (request, response) => {
 
   // 将 is_delete 改成 1，表示删除
   result = await new Promise((resolve, reject) => {
-    sql = `update sys_user set is_delete = ? where id = ?`
-    db.query(sql, [1, request.params.id], (error, results) => {
+    sql = `update sys_user set is_delete = 1 where id = ?`
+    db.query(sql, [request.params.id], (error, results) => {
       if (error) return reject(error)
       if (!results.affectedRows) return reject('删除用户失败，请稍后再试！')
       resolve()

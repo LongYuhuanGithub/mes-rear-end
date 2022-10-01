@@ -1,0 +1,4 @@
+### 获取角色列表
+GET {{baseUrl}}/roles
+Accept: application/json
+Authorization: {{token}}
