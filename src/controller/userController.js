@@ -1,7 +1,7 @@
 const db = require('../config')
 const bcrypt = require('bcryptjs') // 导入加密模块
-const md5 = require("md5");
-const moment = require("moment"); // 用这个包来生成 Token 字符串
+const md5 = require('md5')
+const moment = require('moment') // 用这个包来生成 Token 字符串
 
 // 获取用户列表的处理函数
 exports.getUserList = async (request, response) => {
