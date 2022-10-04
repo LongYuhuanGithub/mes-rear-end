@@ -14,7 +14,7 @@ exports.getUserListSchema = {
     current: id,
     size: id,
     username: joi.string().alphanum().min(1).max(10),
-    phone: joi.string().pattern(/^1[35789]\d{9}$/),
+    phone: joi.string().pattern(/^\d+$/),
     status: joi.string().pattern(/^0|1$/)
   }
 }
