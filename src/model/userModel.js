@@ -11,7 +11,7 @@ const gender = joi.string().pattern(/^0|1|2$/).required() // 性别的验证规�
 // 获取用户列表的验证规则对象
 exports.getUserListSchema = {
   query: {
-    current: joi.number().integer().required(),
+    current: id,
     size: id,
     username: joi.string().alphanum().min(1).max(10),
     phone: joi.string().pattern(/^1[35789]\d{9}$/),
