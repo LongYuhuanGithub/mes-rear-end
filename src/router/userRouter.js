@@ -133,6 +133,7 @@ router.delete('/:id', expressJoi(idSchema), userHandler.deleteUser)
  * @apiParam {String} email 邮箱
  * @apiParam {String} phone 手机
  * @apiParam {String} gender 性别（0男 1女 2未知）
+ * @apiParam {String} status 帐号状态（0正常 1停用）
  * @apiParam {String} remark 备注
  * @apiParam {Number[]} roleIds 角色ID的数组
  *

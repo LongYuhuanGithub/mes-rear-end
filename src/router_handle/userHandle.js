@@ -183,6 +183,7 @@ exports.updateUser = async (request, response) => {
       email: request.body.email,
       phone: request.body.phone,
       gender: request.body.gender,
+      status: request.body.status,
       remark: request.body.remark
     }, request.body.id], (error, results) => {
       if (error) return reject(error)

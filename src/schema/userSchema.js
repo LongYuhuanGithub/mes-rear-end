@@ -7,6 +7,7 @@ const password = joi.string().pattern(/^\S{6,12}$/).required() // 密码的验�
 const email = joi.string().email().required() // 邮箱的验证规则
 const phone = joi.string().pattern(/^1[35789]\d{9}$/).required() // 手机的验证规则
 const gender = joi.string().pattern(/^0|1|2$/).required() // 性别的验证规则
+const status = joi.string().pattern(/^0|1$/).required() // 状态的验证规则
 
 // 获取用户列表的验证规则对象
 exports.getUserListSchema = {
@@ -47,6 +48,7 @@ exports.updateUserSchema = {
     email,
     phone,
     gender,
+    status,
     remark: joi.string().required(),
     roleIds
   }
