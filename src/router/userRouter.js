@@ -26,6 +26,7 @@ const router = express.Router()
  * {
  *   "status": 200,
  *   "message": "获取用户列表成功！",
+ *   "total": 3,
  *   "data": [
  *     {
  *       "id": 1, // 用户ID
