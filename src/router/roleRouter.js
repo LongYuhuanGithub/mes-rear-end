@@ -4,7 +4,7 @@ const roleHandler = require('../controller/roleController') // 导入路由处�
 const router = express.Router()
 
 /**
- * @api {get} /roles 01-获取用户列表
+ * @api {get} /roles 01-获取角色列表
  * @apiName GetRoleList
  * @apiGroup roles
  *
