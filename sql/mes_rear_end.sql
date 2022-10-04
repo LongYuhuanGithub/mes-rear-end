@@ -44,6 +44,8 @@ create table sys_role(
     is_delete char(1) default '0' comment '删除标志（0代表存在 2代表删除）'
 ) engine=InnoDB default charset=utf8 comment = '角色信息表';
 select * from sys_role;
+select * from sys_role where is_delete = 0;
+select * from sys_role sr left join sys_user_role sur on sr.id = sur.role_id where is_delete = 0 and sur.user_id = 1;
 select id, role_name, sort, status, create_by, create_time, remark from sys_role where is_delete = 0 and role_name like '%%';
 insert into sys_role values(0, '超级管理员', 1, '0', 'admin', now(), '超级管理员', 0);
 insert into sys_role values(0, '普通角色', 2, '0', 'admin', now(), '普通角色', 0);

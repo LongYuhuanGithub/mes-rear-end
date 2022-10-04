@@ -2,3 +2,8 @@
 GET {{baseUrl}}/roles
 Accept: application/json
 Authorization: {{token}}
+
+### 按照用户ID获取角色列表
+GET {{baseUrl}}/roles/getrolelistbyuserid/1
+Accept: application/json
+Authorization: {{token}}

@@ -1,7 +1,7 @@
 const express = require('express')
 const expressJoi = require('@escook/express-joi') // 导入验证表单数据的中间件
-const { getUserListSchema, addUserSchema, updateUserSchema } = require('../model/userModel') // 导入需要的验证规则对象
-const userHandler = require('../controller/userController') // 导入路由处理函数模块
+const { getUserListSchema, idSchema, addUserSchema, updateUserSchema } = require('../schema/userSchema') // 导入需要的验证规则对象
+const userHandler = require('../router_handle/userHandle') // 导入路由处理函数模块
 
 const router = express.Router()
 
@@ -81,7 +81,7 @@ router.get('/', expressJoi(getUserListSchema), userHandler.getUserList)
  *   }
  * }
  */
-router.get('/:id', userHandler.getUserById)
+router.get('/:id', expressJoi(idSchema), userHandler.getUserById)
 
 /**
  * @api {post} /users 03-添加用户
@@ -122,7 +122,7 @@ router.post('/', expressJoi(addUserSchema), userHandler.addUser)
  *   "message": "删除成功！"
  * }
  */
-router.delete('/:id', userHandler.deleteUser)
+router.delete('/:id', expressJoi(idSchema), userHandler.deleteUser)
 
 /**
  * @api {put} /users 05-修改用户

@@ -19,6 +19,13 @@ exports.getUserListSchema = {
   }
 }
 
+// 动态参数中ID的验证规则对象
+exports.idSchema = {
+  params: {
+    id
+  }
+}
+
 // 添加用户的验证规则对象
 exports.addUserSchema = {
   body: {
