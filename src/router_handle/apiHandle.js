@@ -11,7 +11,7 @@ const serverData = {} // 记录一些数据，如验证码
 exports.register = async (request, response) => {
   let sql, result
 
-  // 校验重复
+  // 校验重复并给密码加密
   result = await new Promise((resolve, reject) => {
     sql = `select * from sys_user where is_delete = 0 and (username = ? or email = ? or phone = ?)`
     db.query(sql, [request.body.username, request.body.email, request.body.phone], (error, results) => {
@@ -22,16 +22,18 @@ exports.register = async (request, response) => {
         if (results[0].phone === request.body.phone) return reject({ flag: true, error: '手机被占用，请更换其他手机！' })
       }
 
+      // 密码加密
       const salt = Math.floor(Math.random() * 9000000000) + 1000000000 // 随机生成一个盐
       request.body.password = md5(md5(request.body.password + salt)) // 两次 md5 加密
       request.body.password = bcrypt.hashSync(request.body.password, 10) // bcryptjs 加密
       resolve({ flag: false, salt })
     })
   }).catch(error => error)
-  if (result.flag) response.cc(result.error)
+  if (result.flag) return response.cc(result.error)
 
   // 添加用户
   result = await new Promise((resolve, reject) => {
+    // 添加用户
     sql = `insert into sys_user set ?`
     db.query(sql, {
       username: request.body.username,
@@ -50,7 +52,7 @@ exports.register = async (request, response) => {
       resolve({ flag: false, insertId: results.insertId })
     })
   }).catch(error => error)
-  if (result.flag) response.cc(result.error)
+  if (result.flag) return response.cc(result.error)
 
   // 添加用户角色关系
   result = await new Promise((resolve, reject) => {
@@ -61,8 +63,9 @@ exports.register = async (request, response) => {
       resolve()
     })
   }).catch(error => error)
-  if (result) response.cc(result)
+  if (result) return response.cc(result)
 
+  // 响应
   response.cc('注册成功！', 200)
 }
 
@@ -89,10 +92,12 @@ exports.login = async (request, response) => {
       resolve({ flag: false, token, user })
     })
   }).catch(error => error)
-  if (result.flag) response.cc(result.error)
+  if (result.flag) return response.cc(result.error)
 
-  const token = result.token, user = result.user // 转存 token 和 user
+  // 转存 token 和 user
+  const token = result.token, user = result.user
 
+  // 修改最后登录时间
   result = await new Promise((resolve, reject) => {
     sql = `update sys_user set login_date = now() where id = ?`
     db.query(sql, [user.id], (error, results) => {
@@ -101,9 +106,10 @@ exports.login = async (request, response) => {
       resolve()
     })
   }).catch(error => error)
-  if (result) response.cc(result)
+  if (result) return response.cc(result)
 
-  response.send({ // 将生成的 Token 字符串响应给客户端
+  // 响应
+  response.send({
     status: 200,
     message: '登录成功！',
     token: 'Bearer ' + token,
@@ -134,10 +140,12 @@ exports.loginPhone = async (request, response) => {
       resolve({ flag: false, token, user })
     })
   }).catch(error => error)
-  if (result.flag) response.cc(result.error)
+  if (result.flag) return response.cc(result.error)
 
-  const token = result.token, user = result.user // 转存 token 和 user
+  // 转存 token 和 user
+  const token = result.token, user = result.user
 
+  // 修改最后登录时间
   result = await new Promise((resolve, reject) => {
     sql = `update sys_user set login_date = now() where id = ?`
     db.query(sql, [user.id], (error, results) => {
@@ -146,9 +154,10 @@ exports.loginPhone = async (request, response) => {
       resolve()
     })
   }).catch(error => error)
-  if (result) response.cc(result)
+  if (result) return response.cc(result)
 
-  response.send({ // 将生成的 Token 字符串响应给客户端
+  // 响应
+  response.send({
     status: 200,
     message: '登录成功！',
     token: 'Bearer ' + token,
@@ -158,12 +167,14 @@ exports.loginPhone = async (request, response) => {
 
 // 获取验证码的处理函数
 exports.getCheckCode = (request, response) => {
+  // 按照邮箱查询用户
   const sql = `select * from sys_user where is_delete = 0 and email = ?`
   db.query(sql, request.body.email, (error, results) => {
     if (error) return response.cc(error)
     if (results.length !== 1) return response.cc('邮箱不存在！')
     if (request.body.email !== results[0].email) return response.cc('邮箱错误！') // 校验邮箱
 
+    // 生成验证码并保存至 serverData 变量
     const str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
     let checkCode = ''
     for (let i = 0; i < 4; i++) {
@@ -173,7 +184,8 @@ exports.getCheckCode = (request, response) => {
     serverData.salt = results[0].salt
     serverData.checkCode = checkCode
 
-    response.send({ // 将生成的 Token 字符串响应给客户端
+    // 响应
+    response.send({
       status: 200,
       message: '获取成功！',
       checkCode
@@ -183,6 +195,7 @@ exports.getCheckCode = (request, response) => {
 
 // 重置密码的处理函数
 exports.resetPassword = (request, response) => {
+  // 校验验证码
   if ((request.body.checkCode + '').toLowerCase() !== (serverData.checkCode + '').toLowerCase()) {
     delete serverData.userId
     delete serverData.salt
@@ -190,9 +203,11 @@ exports.resetPassword = (request, response) => {
     return response.cc('验证码错误！')
   }
 
+  // 密码加密
   request.body.newPassword = md5(md5(request.body.newPassword + serverData.salt)) // 两次 md5 加密
   request.body.newPassword = bcrypt.hashSync(request.body.newPassword, 10) // bcryptjs 加密
 
+  // 重置密码
   const sql = `update sys_user set password = ?, password_update_date = now() where is_delete = 0 and id = ?`
   db.query(sql, [request.body.newPassword, serverData.userId], (error, results) => {
     if (error) return response.cc(error)

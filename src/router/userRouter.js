@@ -1,13 +1,13 @@
 const express = require('express')
 const expressJoi = require('@escook/express-joi') // 导入验证表单数据的中间件
-const { getUserListSchema, idSchema, addUserSchema, updateUserSchema } = require('../schema/userSchema') // 导入需要的验证规则对象
+const { getUserListSchema, idSchema, addUserSchema, updateUserSchema, resetPasswordSchema } = require('../schema/userSchema') // 导入需要的验证规则对象
 const userHandler = require('../router_handle/userHandle') // 导入路由处理函数模块
 
 const router = express.Router()
 
 /**
  * @api {get} /users 01-获取用户列表
- * @apiName GetUserList
+ * @apiName GetUsers
  * @apiGroup Users
  *
  * @apiHeader {String} Authorization Token令牌
@@ -50,12 +50,12 @@ router.get('/', expressJoi(getUserListSchema), userHandler.getUserList)
 
 /**
  * @api {get} /users/:id 02-根据ID获取用户
- * @apiName GetUserById
+ * @apiName GetUsersId
  * @apiGroup Users
  *
  * @apiHeader {String} Authorization Token令牌
  *
- * @apiParam {Number} id 用户ID，写在地址栏中
+ * @apiParam {Number} id 必需，用户ID，写在地址栏中
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
@@ -85,17 +85,17 @@ router.get('/:id', expressJoi(idSchema), userHandler.getUserById)
 
 /**
  * @api {post} /users 03-添加用户
- * @apiName PostUser
+ * @apiName PostUsers
  * @apiGroup Users
  *
- * @apiParam {String} username 用户名称
- * @apiParam {String} password 密码
- * @apiParam {String} email 邮箱
- * @apiParam {String} phone 手机
- * @apiParam {String} gender 性别（0男 1女 2未知）
- * @apiParam {String} create_by 创建者的用户名
- * @apiParam {String} remark 备注
- * @apiParam {Number[]} roleIds 角色ID的数组
+ * @apiParam {String} username 必需，用户名称
+ * @apiParam {String} password 必需，密码
+ * @apiParam {String} email 必需，邮箱
+ * @apiParam {String} phone 必需，手机
+ * @apiParam {String} gender 必需，性别（0男 1女 2未知）
+ * @apiParam {String} create_by 必需，创建者的用户名
+ * @apiParam {String} remark 必需，备注
+ * @apiParam {Number[]} roleIds 必需，角色ID的数组
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
@@ -109,10 +109,10 @@ router.post('/', expressJoi(addUserSchema), userHandler.addUser)
 
 /**
  * @api {delete} /users/:id 04-删除用户
- * @apiName DeleteUser
+ * @apiName DeleteUsers
  * @apiGroup Users
  *
- * @apiParam {Number} id 用户ID，写在地址栏中
+ * @apiParam {Number} id 必需，用户ID，写在地址栏中
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
@@ -126,16 +126,16 @@ router.delete('/:id', expressJoi(idSchema), userHandler.deleteUser)
 
 /**
  * @api {put} /users 05-修改用户
- * @apiName PutUser
+ * @apiName PutUsers
  * @apiGroup Users
  *
- * @apiParam {Number} id 用户ID
- * @apiParam {String} email 邮箱
- * @apiParam {String} phone 手机
- * @apiParam {String} gender 性别（0男 1女 2未知）
- * @apiParam {String} status 帐号状态（0正常 1停用）
- * @apiParam {String} remark 备注
- * @apiParam {Number[]} roleIds 角色ID的数组
+ * @apiParam {Number} id 必需，用户ID
+ * @apiParam {String} email 必需，邮箱
+ * @apiParam {String} phone 必需，手机
+ * @apiParam {String} gender 必需，性别（0男 1女 2未知）
+ * @apiParam {String} status 必需，帐号状态（0正常 1停用）
+ * @apiParam {String} remark 必需，备注
+ * @apiParam {Number[]} roleIds 必需，角色ID的数组
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息
@@ -146,5 +146,24 @@ router.delete('/:id', expressJoi(idSchema), userHandler.deleteUser)
  * }
  */
 router.put('/', expressJoi(updateUserSchema), userHandler.updateUser)
+
+/**
+ * @api {put} /users/resetpassword 06-重置密码
+ * @apiName PutUsersResetpassword
+ * @apiGroup Users
+ *
+ * @apiParam {Number} id 必需，用户ID
+ * @apiParam {String} newPassword 必需，新密码
+ * @apiParam {String} affirmPassword 必需，确认密码
+ *
+ * @apiSuccess {Number} status 状态码
+ * @apiSuccess {String} message 消息
+ * @apiSuccessExample {json} 响应数据示例
+ * {
+ *   "status": 200,
+ *   "message": "重置成功！"
+ * }
+ */
+router.put('/resetpassword', expressJoi(resetPasswordSchema), userHandler.resetPassword)
 
 module.exports = router

@@ -118,7 +118,7 @@ router.post('/loginphone', expressJoi(loginPhoneSchema), apiHandler.loginPhone)
 router.post('/getcheckcode', expressJoi(getCheckCodeSchema), apiHandler.getCheckCode)
 
 /**
- * @api {put} /api/resetpassword 05-重置密码
+ * @api {put} /api/resetpassword 05-根据验证码重置密码
  * @apiName PostApiResetpassword
  * @apiGroup PublicApi
  *

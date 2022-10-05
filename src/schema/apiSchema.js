@@ -41,6 +41,6 @@ exports.resetPasswordSchema = { // 重置密码的验证规则对象
   body: {
     checkCode,
     newPassword: password,
-    affirmPassword: joi.equal(joi.ref("newPassword")).concat(password)
+    affirmPassword: joi.equal(joi.ref('newPassword')).concat(password)
   }
 }

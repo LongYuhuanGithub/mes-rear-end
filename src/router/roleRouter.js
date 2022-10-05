@@ -7,7 +7,7 @@ const router = express.Router()
 
 /**
  * @api {get} /roles 01-获取角色列表
- * @apiName GetRoleList
+ * @apiName GetRoles
  * @apiGroup roles
  *
  * @apiHeader {String} Authorization Token令牌
@@ -41,7 +41,7 @@ router.get('/', roleHandler.getRoleList)
  *
  * @apiHeader {String} Authorization Token令牌
  *
- * @apiParam {Number} id 用户ID，写在地址栏中
+ * @apiParam {Number} id 必需，用户ID，写在地址栏中
  *
  * @apiSuccess {Number} status 状态码
  * @apiSuccess {String} message 消息

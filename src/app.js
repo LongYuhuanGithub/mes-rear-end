@@ -16,9 +16,9 @@ const app = express()
 moment.locale('zh-cn')
 
 // 注册第三方中间件
-app.use(express.urlencoded({ extended: false })) // Content-Type: application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: false })) // 解析 Content-Type: application/x-www-form-urlencoded
 app.use(express.json()) // 解析 Content-Type: application/json
-app.use(cors())
+app.use(cors()) // 解决跨域问题
 app.use(expressJWT({ secret: config.jwtSecretKey }).unless({ path: [/^\/api\//] })) // 指定 /api/ 路径不需要访问权限
 
 // 响应信息的中间件
@@ -33,6 +33,4 @@ app.use('/roles', roleRouter)
 // 错误级别的中间件
 app.use(error)
 
-app.listen(3000, () => {
-  console.log('api server running at http://localhost:3000')
-})
+app.listen(3000, () => console.log('http://localhost:3000'))

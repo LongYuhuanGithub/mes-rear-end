@@ -42,3 +42,14 @@ Authorization: {{token}}
   "remark": "测试111",
   "roleIds": [1]
 }
+
+### 重置密码
+PUT {{baseUrl}}/users/resetpassword
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "id": 1,
+  "newPassword": "1234567",
+  "affirmPassword": "1234567"
+}

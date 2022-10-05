@@ -5,7 +5,7 @@ const router = express.Router()
 
 /**
  * @api {get} /menus 01-获取菜单列表
- * @apiName GetMenuList
+ * @apiName GetMenus
  * @apiGroup Menus
  *
  * @apiHeader {String} Authorization Token令牌

@@ -24,7 +24,7 @@ exports.getUserList = async (request, response) => {
       resolve({ flag: false, total: results[0]['count(1)'] })
     })
   }).catch(error => error)
-  if (result.flag) response.cc(result.error)
+  if (result.flag) return response.cc(result.error)
 
   const total = result.total // 转存 total
 
@@ -42,7 +42,7 @@ exports.getUserList = async (request, response) => {
       resolve({ flag: false, results })
     })
   }).catch(error => error)
-  if (result.flag) response.cc(result.error)
+  if (result.flag) return response.cc(result.error)
 
   response.send({
     status: 200,
@@ -217,4 +217,31 @@ exports.updateUser = async (request, response) => {
     if (result) return response.cc(result)
   }
   response.cc('修改成功！', 200)
+}
+
+// 重置密码的处理函数
+exports.resetPassword = async (request, response) => {
+  let sql, result
+
+  // 按照ID查询用户
+  result = await new Promise((resolve, reject) => {
+    sql = `select * from sys_user where is_delete = 0 and id = ?`
+    db.query(sql, [request.body.id], (error, results) => {
+      if (error) return reject({ flag: true, error })
+      resolve({ flag: false, salt: results[0].salt })
+    })
+  }).catch(error => error)
+  if (result.flag) return response.cc(result.error)
+
+  // 密码加密
+  request.body.newPassword = md5(md5(request.body.newPassword + result.salt)) // 两次 md5 加密
+  request.body.newPassword = bcrypt.hashSync(request.body.newPassword, 10) // bcryptjs 加密
+
+  // 重置密码
+  sql = `update sys_user set password = ?, password_update_date = now() where is_delete = 0 and id = ?`
+  db.query(sql, [request.body.newPassword, request.body.id], (error, results) => {
+    if (error) return response.cc(error)
+    if (!results.affectedRows) return response.cc('重置密码失败，请稍后再试！')
+    response.cc('重置成功！', 200)
+  })
 }

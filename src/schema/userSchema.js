@@ -9,8 +9,7 @@ const phone = joi.string().pattern(/^1[35789]\d{9}$/).required() // 手机的验
 const gender = joi.string().pattern(/^0|1|2$/).required() // 性别的验证规则
 const status = joi.string().pattern(/^0|1$/).required() // 状态的验证规则
 
-// 获取用户列表的验证规则对象
-exports.getUserListSchema = {
+exports.getUserListSchema = { // 获取用户列表的验证规则对象
   query: {
     current: id,
     size: id,
@@ -20,15 +19,13 @@ exports.getUserListSchema = {
   }
 }
 
-// 动态参数中ID的验证规则对象
-exports.idSchema = {
+exports.idSchema = { // 动态参数中ID的验证规则对象
   params: {
     id
   }
 }
 
-// 添加用户的验证规则对象
-exports.addUserSchema = {
+exports.addUserSchema = { // 添加用户的验证规则对象
   body: {
     username,
     password,
@@ -41,8 +38,7 @@ exports.addUserSchema = {
   }
 }
 
-// 修改用户的验证规则对象
-exports.updateUserSchema = {
+exports.updateUserSchema = { // 修改用户的验证规则对象
   body: {
     id,
     email,
@@ -51,5 +47,13 @@ exports.updateUserSchema = {
     status,
     remark: joi.string().required(),
     roleIds
+  }
+}
+
+exports.resetPasswordSchema = { // 重置密码的验证规则对象
+  body: {
+    id,
+    newPassword: password,
+    affirmPassword: joi.equal(joi.ref('newPassword')).concat(password)
   }
 }
